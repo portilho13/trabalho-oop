@@ -6,8 +6,13 @@ namespace trabalho_oop
     {
         static void Main(string[] args)
         {
-            Airplane ryanair = new Airplane("Ryanair", "9H-GSF");
-            Console.WriteLine(ryanair.Registration);
+            FMS fms = new FMS();
+            fms.Start();
+
+            Airplane ryanair = new Airplane("Ryanair", "EI-GSG");
+
+            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms);
+            flight.SaveFlight();
         }
     }
 };
