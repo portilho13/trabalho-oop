@@ -76,6 +76,8 @@ namespace trabalho_oop
             Console.WriteLine("FMS Started Successfully");
         }
 
+        public string ReadFromJson(string filePath) => File.ReadAllText(filePath);
+
         ~FMS() { }
     }
 }

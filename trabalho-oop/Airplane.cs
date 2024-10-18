@@ -5,16 +5,15 @@ namespace trabalho_oop
 {
     public class Airplane
     {
-        public string Company {  get; set; }
+        public string Company { get; set; }
 
         public string Registration { get; set; }
 
-        public bool isOccupied { get; set; } 
+        public bool isOccupied { get; set; }
 
-        private FMS Fms { get; set; }
+        private FMS Fms;
+        public Airplane() { } // Parameterless constructor (needed for deserialization)
         
-        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
         public Airplane(string company, string registration, FMS fms)
         {
             Company = company;
@@ -23,17 +22,17 @@ namespace trabalho_oop
             isOccupied = false;
         }
 
+        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+
         public void ChangeOccupiedStatus()
         {
             isOccupied = !isOccupied;
         }
-        
+
         public void SaveAircraft()
         {
             string json = this.ConvertToJson();
-
             string aircraft = this.Registration + ".json";
-
             string path = Path.Combine(Fms.AircraftFolderPath, aircraft);
             Console.WriteLine(path);
             Fms.WriteJsonToFile(path, json);
@@ -41,5 +40,4 @@ namespace trabalho_oop
 
         ~Airplane() { }
     }
-
 }

@@ -14,6 +14,10 @@ namespace trabalho_oop
 
             Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms);
             flight.SaveFlight();
+            
+            Fleet fleet = new Fleet(fms);
+            fleet.ReadAircraftListFromAirplaneFolder();
+            fleet.ShowAircraftList();
         }
     }
 };
