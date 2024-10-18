@@ -9,9 +9,9 @@ namespace trabalho_oop
         public string Number { get; set; }
         public string Origin { get; private set; }
         public string Destination { get; private set; }
+        public Airplane Airplane { get; private set; }
         
         private FMS Fms { get; set; }
-        public Airplane Airplane { get; private set; }
 
         public Flight(string number, string origin, string destination, Airplane airplane, FMS fms) {
             airplane.ChangeOccupiedStatus(); // Change status to occupied
@@ -22,7 +22,7 @@ namespace trabalho_oop
             Airplane = airplane;
         }
 
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
 
         public void SaveFlight()
         {

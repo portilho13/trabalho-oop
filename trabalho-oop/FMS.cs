@@ -9,15 +9,19 @@ namespace trabalho_oop
         public string MainFolderPath = @"./fms"; // Default path for FMS
 
         public string FlightFolderPath;
+        
+        public string AircraftFolderPath;
 
         private List<string> Folders;
 
         public FMS()
         {
             FlightFolderPath = Path.Combine(MainFolderPath, "flights");
+            AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
             Folders = new List<string>
             {
                 FlightFolderPath,
+                AircraftFolderPath,
             };
         }
 

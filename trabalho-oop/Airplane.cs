@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace trabalho_oop
 {
@@ -8,17 +9,34 @@ namespace trabalho_oop
 
         public string Registration { get; set; }
 
-        public bool isOccupied = false;
+        public bool isOccupied { get; set; } 
 
-        public Airplane(string company, string registration)
+        private FMS Fms { get; set; }
+        
+        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+
+        public Airplane(string company, string registration, FMS fms)
         {
             Company = company;
             Registration = registration;
+            Fms = fms;
+            isOccupied = false;
         }
 
         public void ChangeOccupiedStatus()
         {
             isOccupied = !isOccupied;
+        }
+        
+        public void SaveAircraft()
+        {
+            string json = this.ConvertToJson();
+
+            string aircraft = this.Registration + ".json";
+
+            string path = Path.Combine(Fms.AircraftFolderPath, aircraft);
+            Console.WriteLine(path);
+            Fms.WriteJsonToFile(path, json);
         }
 
         ~Airplane() { }
