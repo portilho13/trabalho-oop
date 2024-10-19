@@ -21,12 +21,10 @@ public class Fleet
 
     public void ReadAircraftListFromAirplaneFolder()
     {
-        Console.WriteLine(Fms.AircraftFolderPath);
         string[] files = Directory.GetFiles(Fms.AircraftFolderPath);
         foreach (string file in files)
         {
             string json = Fms.ReadFromJson(file);
-            Console.WriteLine(json);
             Airplane airplane = JsonSerializer.Deserialize<Airplane>(json);
             this.AddAirplane(airplane);
         }
@@ -36,7 +34,7 @@ public class Fleet
     {
         foreach (Airplane airplane in fleet.Values)
         {
-            Console.WriteLine(airplane);
+            Console.WriteLine(airplane.Registration);
         }
     }
 

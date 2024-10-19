@@ -16,9 +16,9 @@ namespace trabalho_oop
         
         public Airplane(string company, string registration, FMS fms)
         {
+            Fms = fms;
             Company = company;
             Registration = registration;
-            Fms = fms;
             isOccupied = false;
         }
 
@@ -34,7 +34,6 @@ namespace trabalho_oop
             string json = this.ConvertToJson();
             string aircraft = this.Registration + ".json";
             string path = Path.Combine(Fms.AircraftFolderPath, aircraft);
-            Console.WriteLine(path);
             Fms.WriteJsonToFile(path, json);
         }
 
