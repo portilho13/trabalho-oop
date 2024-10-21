@@ -42,4 +42,12 @@ public class Fleet
     {
         return fleet[registration];
     }
+
+    public void RemoveAirplane(string registration)
+    {
+        Airplane airplane = GetAirplane(registration);
+        Fms.DeleteAirplane(airplane);
+        fleet.Remove(registration);
+    }
+    
 }

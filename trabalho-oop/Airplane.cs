@@ -22,7 +22,7 @@ namespace trabalho_oop
             isOccupied = false;
         }
 
-        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
 
         public void ChangeOccupiedStatus()
         {

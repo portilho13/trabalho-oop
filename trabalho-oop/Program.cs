@@ -19,18 +19,22 @@ namespace trabalho_oop
                     case 1:
                         string companyName;
                         string registration; 
-                        Console.WriteLine("Company Name: ");
+                        Console.Write("Company Name: ");
                         companyName = Console.ReadLine();
-                        Console.WriteLine("Registration: ");
+                        Console.Write("Registration: ");
                         registration = Console.ReadLine();
-                        
-                        Console.WriteLine(companyName);
-                        Console.WriteLine(registration);
                         
                         Airplane a = new Airplane(companyName, registration, Fms);
                         a.SaveAircraft();
                         break;
+                    case 2:
+                        string reg;
+                        Console.Write("Registration: ");
+                        registration = Console.ReadLine();
+                        
+                        break;
                 }
+                
             }
         }
         static int MainMenu()
@@ -46,6 +50,11 @@ namespace trabalho_oop
         {
             FMS fms = new FMS();
             fms.Start();
+            
+            Fleet fleet = new Fleet(fms);
+            fleet.ReadAircraftListFromAirplaneFolder();
+            fleet.ShowAircraftList();
+            fleet.RemoveAirplane("CS-TEW");
             
             bool exit = false;
             while (!exit)
@@ -71,9 +80,6 @@ namespace trabalho_oop
             Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms);
             flight.SaveFlight(fms);
             
-            Fleet fleet = new Fleet(fms);
-            fleet.ReadAircraftListFromAirplaneFolder();
-            fleet.ShowAircraftList();
         }
     }
 };
