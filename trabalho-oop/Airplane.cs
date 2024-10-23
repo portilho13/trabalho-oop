@@ -28,15 +28,6 @@ namespace trabalho_oop
         {
             isOccupied = !isOccupied;
         }
-
-        public void SaveAircraft()
-        {
-            string json = this.ConvertToJson();
-            string aircraft = this.Registration + ".json";
-            string path = Path.Combine(Fms.AircraftFolderPath, aircraft);
-            Fms.WriteJsonToFile(path, json);
-        }
-
         ~Airplane() { }
     }
 }

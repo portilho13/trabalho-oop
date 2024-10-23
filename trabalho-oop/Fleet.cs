@@ -19,9 +19,9 @@ public class Fleet
         fleet.Add(airplane.Registration, airplane);
     }
 
-    public void ReadAircraftListFromAirplaneFolder()
+    public void LoadFleet()
     {
-        string[] files = Directory.GetFiles(Fms.AircraftFolderPath);
+        string[] files = Fms.ReadAirplaneFromFolder();
         foreach (string file in files)
         {
             string json = Fms.ReadFromJson(file);

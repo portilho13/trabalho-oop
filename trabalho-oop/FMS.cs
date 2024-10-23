@@ -77,6 +77,17 @@ namespace trabalho_oop
         }
 
         public string ReadFromJson(string filePath) => File.ReadAllText(filePath);
+        
+        public void SaveFlight(Flight flight)
+        {
+            string json = flight.ConvertToJson();
+
+            string flighFile = flight.Number + ".json";
+
+            string path = Path.Combine(FlightFolderPath, flighFile);
+
+            WriteJsonToFile(path, json);
+        }
 
         public void SaveAirplane(Airplane airplane)
         {
@@ -93,6 +104,11 @@ namespace trabalho_oop
             {
                 File.Delete(airplane_path);
             }
+        }
+        
+        public string[] ReadAirplaneFromFolder()
+        {
+            return Directory.GetFiles(AircraftFolderPath);
         }
         ~FMS() { }
     }
