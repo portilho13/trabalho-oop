@@ -19,9 +19,6 @@ namespace trabalho_oop
             Airplane = airplane;
         }
 
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-        
-
         ~Flight() { }
 
     }

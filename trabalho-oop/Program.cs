@@ -6,6 +6,9 @@ namespace trabalho_oop
     {
         static void Main(string[] args)
         {
+            Staff f1 = new Staff();
+            Console.WriteLine(f1.staff_code);
+            
             FMS fms = new FMS(); // Start new file managment system
             fms.Start();
             

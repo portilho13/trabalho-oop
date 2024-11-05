@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace trabalho_oop
 {
@@ -12,22 +13,29 @@ namespace trabalho_oop
         
         public string AircraftFolderPath;
 
+        public string StaffFolderPath;
+
         private List<string> Folders;
 
         public FMS()
         {
             FlightFolderPath = Path.Combine(MainFolderPath, "flights");
             AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
+            StaffFolderPath = Path.Combine(MainFolderPath, "staff");
             Folders = new List<string>
             {
                 FlightFolderPath,
                 AircraftFolderPath,
+                StaffFolderPath
             };
         }
 
         private bool DoesFileExist(string filePath) => File.Exists(filePath);
 
         private bool DoesFolderExists(string filePath) => File.Exists(filePath);
+        
+        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+
 
         public void WriteJsonToFile(string filePath, string jsonString)
         {
@@ -80,7 +88,7 @@ namespace trabalho_oop
         
         public void SaveFlight(Flight flight)
         {
-            string json = flight.ConvertToJson();
+            string json = ConvertToJson();
 
             string flighFile = flight.Number + ".json";
 
@@ -91,7 +99,7 @@ namespace trabalho_oop
 
         public void SaveAirplane(Airplane airplane)
         {
-            string json = airplane.ConvertToJson();
+            string json = ConvertToJson();
             string reg = airplane.Registration + ".json";
             string path = Path.Combine(this.AircraftFolderPath, reg);
             this.WriteJsonToFile(path, json);
@@ -109,6 +117,11 @@ namespace trabalho_oop
         public string[] ReadAirplaneFromFolder()
         {
             return Directory.GetFiles(AircraftFolderPath);
+        }
+
+        public void SaveStaff(Staff staff)
+        {
+            string json = ConvertToJson();
         }
         ~FMS() { }
     }

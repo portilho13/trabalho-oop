@@ -21,9 +21,7 @@ namespace trabalho_oop
             Registration = registration;
             isOccupied = false;
         }
-
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
+        
         public void ChangeOccupiedStatus()
         {
             isOccupied = !isOccupied;
