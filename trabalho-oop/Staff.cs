@@ -1,10 +1,16 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+
 namespace trabalho_oop;
 
 public class Staff: Person
 {
-    public string staff_code;
+    public string staff_code { get; set; }
     
-    public string password;
+    public string password { get; set; }
+    
+    public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
 
     private string GenerateStaffCode()
     {
@@ -20,14 +26,33 @@ public class Staff: Person
         return new string(staffCode);
     }
 
-    public Staff()
+    private string HashPassword(string password)
     {
-        this.staff_code = GenerateStaffCode();
+        using (SHA256 sha256Hash = SHA256.Create())
+        {
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+            
+            byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
+            
+            StringBuilder hashString = new StringBuilder();
+            foreach (byte b in hashBytes)
+            {
+                hashString.Append(b.ToString("x2"));
+            }
+            
+            return hashString.ToString();
+        }
     }
 
     public void SetPassword(string password)
     {
+        password = HashPassword(password);
         this.password = password;
+    }
+
+    public Staff()
+    {
+        this.staff_code = GenerateStaffCode();
     }
     
     ~Staff() {}

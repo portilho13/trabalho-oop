@@ -88,7 +88,7 @@ namespace trabalho_oop
         
         public void SaveFlight(Flight flight)
         {
-            string json = ConvertToJson();
+            string json = flight.ConvertToJson();
 
             string flighFile = flight.Number + ".json";
 
@@ -99,7 +99,7 @@ namespace trabalho_oop
 
         public void SaveAirplane(Airplane airplane)
         {
-            string json = ConvertToJson();
+            string json = airplane.ConvertToJson();
             string reg = airplane.Registration + ".json";
             string path = Path.Combine(this.AircraftFolderPath, reg);
             this.WriteJsonToFile(path, json);
@@ -107,10 +107,10 @@ namespace trabalho_oop
 
         public void DeleteAirplane(Airplane airplane)
         {
-            string airplane_path = Path.Combine(AircraftFolderPath, airplane.Registration + ".json");
-            if (File.Exists(airplane_path))
+            string airplanePath = Path.Combine(AircraftFolderPath, airplane.Registration + ".json");
+            if (File.Exists(airplanePath))
             {
-                File.Delete(airplane_path);
+                File.Delete(airplanePath);
             }
         }
         
@@ -119,9 +119,66 @@ namespace trabalho_oop
             return Directory.GetFiles(AircraftFolderPath);
         }
 
-        public void SaveStaff(Staff staff)
+        public void SaveStaff(List<Staff> staffList)
         {
-            string json = ConvertToJson();
+
+            foreach (Staff staff in staffList)
+            {
+                string json = staff.ConvertToJson();
+                string code = staff.staff_code + ".json";
+                string path = Path.Combine(this.StaffFolderPath, code);
+                WriteJsonToFile(path, json);
+            }
+        }
+        
+        private bool DoesStaffExist(string staffCode) => File.Exists(Path.Combine(StaffFolderPath, staffCode + ".json"));
+
+        public List<Staff> ReadStaffFromFolder()
+        {
+            List<Staff> staffList = new List<Staff>();
+        
+            // Get only .json files in the folder
+            string[] files = Directory.GetFiles(StaffFolderPath, "*.json");
+
+            foreach (string file in files)
+            {
+                if (!DoesStaffExist(file))
+                {
+                    try
+                    {
+                        // Read JSON content
+                        string json = File.ReadAllText(file);
+
+                        // Skip if file is empty
+                        if (string.IsNullOrWhiteSpace(json))
+                        {
+                            Console.WriteLine($"Skipped empty file: {file}");
+                            continue;
+                        }
+                        Staff staff = JsonSerializer.Deserialize<Staff>(json, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                    
+                        if (staff != null)
+                        {
+                            staffList.Add(staff);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Handle JSON-specific exceptions
+                        Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle any other exceptions (e.g., file read issues)
+                        Console.WriteLine($"Error reading file {file}: {ex.Message}");
+                    }
+                }
+            }
+
+            return staffList;
         }
         ~FMS() { }
     }

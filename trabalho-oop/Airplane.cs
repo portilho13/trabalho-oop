@@ -10,13 +10,12 @@ namespace trabalho_oop
         public string Registration { get; set; }
 
         public bool isOccupied { get; set; }
-
-        private FMS Fms;
+        
+        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
         public Airplane() { } // Parameterless constructor (needed for deserialization)
         
         public Airplane(string company, string registration, FMS fms)
         {
-            Fms = fms;
             Company = company;
             Registration = registration;
             isOccupied = false;

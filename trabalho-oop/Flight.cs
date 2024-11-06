@@ -11,6 +11,9 @@ namespace trabalho_oop
         public string Destination { get; private set; }
         public Airplane Airplane { get; private set; }
         
+        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+
+        
         public Flight(string number, string origin, string destination, Airplane airplane) {
             airplane.ChangeOccupiedStatus(); // Change status to occupied
             Number = number;
