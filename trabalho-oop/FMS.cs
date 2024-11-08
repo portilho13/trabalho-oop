@@ -15,6 +15,10 @@ namespace trabalho_oop
 
         public string StaffFolderPath;
 
+        private string NamesFile = "nomes.txt";
+        
+        private string SurnamesFile = "apelidos.txt";
+
         private List<string> Folders;
 
         public FMS()
@@ -179,6 +183,29 @@ namespace trabalho_oop
             }
 
             return staffList;
+        }
+
+        public List<string> GetPassangerNames()
+        {
+            List<string> namesList = new List<string>();
+            string[] names = File.ReadAllLines(NamesFile);
+            foreach (string name in names)
+            {
+                namesList.Add(name);
+            }
+            return namesList;
+        }
+
+        public List<string> GetPassangerSurnames()
+        {
+            List<string> surnamesList = new List<string>();
+            string[] surnames = File.ReadAllLines(SurnamesFile);
+            foreach (string surname in surnames)
+            {
+                surnamesList.Add(surname);
+            }
+
+            return surnamesList;
         }
         ~FMS() { }
     }

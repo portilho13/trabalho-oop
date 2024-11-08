@@ -4,6 +4,6 @@ public class Passanger: Person
 {
     public string password;
     
-    Passanger() {}
+    public Passanger() {}
     ~Passanger() {}
 }

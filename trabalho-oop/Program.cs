@@ -9,6 +9,8 @@ namespace trabalho_oop
             
             FMS fms = new FMS(); // Start new file managment system
             fms.Start();
+
+            fms.GetPassangerSurnames();
             
             SessionManager sessionManager = new SessionManager();
             sessionManager.fms = fms;
@@ -19,10 +21,10 @@ namespace trabalho_oop
             
             sessionManager.RegisterStaff("Junior", "junior.portilho2005@gmail.com", "junior");
             
-            Airplane ryanair = new Airplane("Ryanair", "EI-GSG", fms);
+            Airplane ryanair = new Airplane("Ryanair", "EI-GSG", fms, 186);
             fms.SaveAirplane(ryanair);
 
-            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair); 
+            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms); 
             fms.SaveFlight(flight);
             
             sessionManager.Save();
