@@ -23,6 +23,12 @@ namespace trabalho_oop
                 Console.WriteLine(p.Name);
             }
         }
+
+        private int GenerateRandomNumberOfPassangers()
+        {
+            Random random = new Random();
+            return random.Next(100, Airplane.Capacity); // Random number between 100 to be realistic and Airplane maximum capacity
+        }
         
         public Flight(string number, string origin, string destination, Airplane airplane, FMS fms) {
             Fms = fms;
@@ -32,7 +38,7 @@ namespace trabalho_oop
             Destination = destination;
             Airplane = airplane;
             PassangerList p = new PassangerList(Fms);
-            ListOfPassangers = p.GeneratePassangerList(100);
+            ListOfPassangers = p.GeneratePassangerList(GenerateRandomNumberOfPassangers());
             DisplayPassangerList();
         }
 
