@@ -89,7 +89,7 @@ namespace trabalho_oop
         }
 
         public string ReadFromJson(string filePath) => File.ReadAllText(filePath);
-        
+
         public void SaveFlight(Flight flight)
         {
             string json = flight.ConvertToJson();

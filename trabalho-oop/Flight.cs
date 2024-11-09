@@ -12,24 +12,38 @@ namespace trabalho_oop
         public string Destination { get; private set; }
         public Airplane Airplane { get; private set; }
         
-        public List<Passanger> ListOfPassangers { get; private set; }
+        public Dictionary<string, Reservation> PassangersReservations { get; private set; }
         
         public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
-        private void DisplayPassangerList()
-        {
-            foreach (Passanger p in ListOfPassangers)
-            {
-                Console.WriteLine(p.Name);
-            }
-        }
 
         private int GenerateRandomNumberOfPassangers()
         {
             Random random = new Random();
-            return random.Next(100, Airplane.Capacity); // Random number between 100 to be realistic and Airplane maximum capacity
+            return random.Next(100, Airplane.Capacity); // Random number between 100 (to be realistic) and Airplane maximum capacity
         }
-        
+
+        public void DisplayPassengers()
+        {
+            if (PassangersReservations.Count == 0)
+            {
+                Console.WriteLine("No passengers to display.");
+                return;
+            }
+
+            Console.WriteLine("Passenger List:");
+            foreach (var entry in PassangersReservations)
+            {
+                string reservationCode = entry.Key;
+                Reservation passenger = entry.Value;
+
+                Console.WriteLine($"Reservation Code: {reservationCode}, Name: {passenger.Passanger.Name}");
+            }
+        }
+
+        public void AddReservation(Reservation reservation)
+        {
+            PassangersReservations.Add(reservation.ReservationCode, reservation);
+        }
         public Flight(string number, string origin, string destination, Airplane airplane, FMS fms) {
             Fms = fms;
             airplane.ChangeOccupiedStatus(); // Change status to occupied
@@ -38,8 +52,7 @@ namespace trabalho_oop
             Destination = destination;
             Airplane = airplane;
             PassangerList p = new PassangerList(Fms);
-            ListOfPassangers = p.GeneratePassangerList(GenerateRandomNumberOfPassangers());
-            DisplayPassangerList();
+            PassangersReservations = p.GeneratePassangerList(GenerateRandomNumberOfPassangers());
         }
 
         ~Flight() { }

@@ -2,9 +2,6 @@ namespace trabalho_oop;
 
 public class PassangerList
 {
-    
-    List<Passanger> passangerList = new List<Passanger>();
-    
     private List<string> passangerNames = new List<string>();
     private List<string> passangerSurnames = new List<string>();
     private FMS Fms;
@@ -16,7 +13,7 @@ public class PassangerList
         passangerSurnames = Fms.GetPassangerSurnames();
     }
 
-    private string GenerateRandomPassangers()
+    private string GenerateRandomPassanger()
     {
         // Check that both lists contain elements before proceeding
         if (passangerNames.Count == 0 || passangerSurnames.Count == 0)
@@ -42,27 +39,29 @@ public class PassangerList
         // Output the result
         return passanger;
     }
+    
 
 
-    public List<Passanger> GeneratePassangerList(int passangerCount)
+    public Dictionary<string, Reservation> GeneratePassangerList(int passangerCount)
     {
-        List<Passanger> passangerList = new List<Passanger>();
+        Dictionary<string, Reservation> passangersReservatonList = new Dictionary<string, Reservation>();
         for (int i = 0; i < passangerCount; i++)
         {
+            Reservation r = new Reservation();
             Passanger p = new Passanger();
-            string passangerName = GenerateRandomPassangers();
-            if (passangerName != "")
+            string passangerName = GenerateRandomPassanger();
+            p.Name = passangerName;
+            
+            r.Passanger = p;
+            do
             {
-                p.Name = passangerName;
-                passangerList.Add(p);
-            }
-            else
-            {
-                Console.WriteLine("Passanger name is empty.");
-                return passangerList;
-            }
+                r.GenerateReservationCode();
+            } while(passangersReservatonList.ContainsKey(r.ReservationCode));
+            
+            passangersReservatonList.Add(r.ReservationCode, r);
+
         }
-        return passangerList;
+        return passangersReservatonList;
     }
 
 }

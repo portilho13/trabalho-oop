@@ -24,7 +24,9 @@ namespace trabalho_oop
             Airplane ryanair = new Airplane("Ryanair", "EI-GSG", fms, 186);
             fms.SaveAirplane(ryanair);
 
-            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms); 
+            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms);
+
+            flight.DisplayPassengers();
             fms.SaveFlight(flight);
             
             sessionManager.Save();
