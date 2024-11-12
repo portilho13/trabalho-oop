@@ -1,27 +1,45 @@
-namespace trabalho_oop;
+using System;
+using System.Text.Json;
 
-public class Reservation
+namespace trabalho_oop
 {
-    public FMS Fms { private get; set; }
-    
-    public string ReservationCode { get; private set; }
-    public Person Passanger {get; set;}
-    
-    public Reservation() {}
-    
-    public void GenerateReservationCode()
+    public class Reservation : IStorable
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var random = new Random();
-        var reservationCode = new char[6];
+        private static Logger logger = Logger.Instance("./fms/logs/app.log");
 
-        for (int i = 0; i < reservationCode.Length; i++)
+        public FMS Fms { private get; set; }
+
+        public string ReservationCode { get; private set; }
+        public Person Passenger { get; set; }
+
+        public Reservation()
         {
-            reservationCode[i] = chars[random.Next(chars.Length)];
         }
-        
-        this.ReservationCode = new string(reservationCode);
+
+        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+
+        public string GetIdentifier() => ReservationCode;
+
+        public EntityType GetEntityType() => EntityType.Reservation;
+
+        // Generate a unique reservation code
+        public void GenerateReservationCode()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var reservationCode = new char[6];
+
+            for (int i = 0; i < reservationCode.Length; i++)
+            {
+                reservationCode[i] = chars[random.Next(chars.Length)];
+            }
+
+            this.ReservationCode = new string(reservationCode);
+            
+        }
+
+        ~Reservation()
+        {
+        }
     }
-    
-    ~Reservation() {}
 }

@@ -7,206 +7,330 @@ namespace trabalho_oop
 {
     public class FMS
     {
-        public string MainFolderPath = @"./fms"; // Default path for FMS
-
-        public string FlightFolderPath;
-        
-        public string AircraftFolderPath;
-
-        public string StaffFolderPath;
+        public static string MainFolderPath = "./fms"; // Default path for FMS
+        public static string FlightFolderPath = Path.Combine(MainFolderPath, "flights");
+        public static string AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
+        public static string StaffFolderPath = Path.Combine(MainFolderPath, "staff");
+        public static string PassengerFolderPath = Path.Combine(MainFolderPath, "passenger");
 
         private string NamesFile = "nomes.txt";
-        
         private string SurnamesFile = "apelidos.txt";
 
-        private List<string> Folders;
+        private List<string> Folders = new List<string>
+        {
+            FlightFolderPath,
+            AircraftFolderPath,
+            StaffFolderPath
+        };
 
         public FMS()
         {
-            FlightFolderPath = Path.Combine(MainFolderPath, "flights");
-            AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
-            StaffFolderPath = Path.Combine(MainFolderPath, "staff");
-            Folders = new List<string>
-            {
-                FlightFolderPath,
-                AircraftFolderPath,
-                StaffFolderPath
-            };
         }
 
-        private bool DoesFileExist(string filePath) => File.Exists(filePath);
+        private bool DoesFileExist(string filePath)
+        {
+            try
+            {
+                return File.Exists(filePath);
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is PathTooLongException)
+            {
+                throw new ArgumentException($"Invalid file path: {filePath}", ex);
+            }
+        }
 
-        private bool DoesFolderExists(string filePath) => File.Exists(filePath);
-        
-        private string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        private bool DoesFolderExists(string filePath)
+        {
+            try
+            {
+                return Directory.Exists(filePath);
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is PathTooLongException)
+            {
+                throw new ArgumentException($"Invalid folder path: {filePath}", ex);
+            }
+        }
 
+        private string ConvertToJson()
+        {
+            try
+            {
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException("Failed to serialize object to JSON", ex);
+            }
+        }
 
         public void WriteJsonToFile(string filePath, string jsonString)
         {
-            string folderPath = Path.GetDirectoryName(filePath);
-            if (!DoesFolderExists(folderPath))
+            try
             {
-                Directory.CreateDirectory(folderPath);
-            }
-            if (!DoesFileExist(filePath))
-            {
-                CreateFile(filePath);
-            }
+                string folderPath = Path.GetDirectoryName(filePath);
+                if (!DoesFolderExists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                if (!DoesFileExist(filePath))
+                {
+                    CreateFile(filePath);
+                }
 
-            File.WriteAllText(filePath, jsonString);
-            Console.WriteLine("JSON written successfully");
+                File.WriteAllText(filePath, jsonString);
+                Console.WriteLine("JSON written successfully");
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to write JSON to file: {filePath}", ex);
+            }
         }
 
         private void CreateFile(string filename)
         {
-            if (!File.Exists(filename))
+            try
             {
-                using FileStream fs = File.Create(filename);
+                if (!File.Exists(filename))
+                {
+                    using FileStream fs = File.Create(filename);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to create file: {filename}", ex);
             }
         }
 
         private void CreateFolder(string foldername)
         {
-            if (!Directory.Exists(foldername))
+            try
             {
-                Directory.CreateDirectory(foldername);
+                if (!Directory.Exists(foldername))
+                {
+                    Directory.CreateDirectory(foldername);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to create folder: {foldername}", ex);
             }
         }
 
         public void Start()
         {
-            if (!Directory.Exists(MainFolderPath))
+            try
             {
-                Directory.CreateDirectory(MainFolderPath);
+                if (!Directory.Exists(MainFolderPath))
+                {
+                    Directory.CreateDirectory(MainFolderPath);
+                }
+
+                foreach (string folder in Folders)
+                {
+                    CreateFolder(folder);
+                }
+
+                Console.WriteLine("FMS Started Successfully");
             }
-
-            foreach (string folder in Folders)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
-                CreateFolder(folder); // This should create the "flights" folder
-            };
-
-            Console.WriteLine("FMS Started Successfully");
+                throw new InvalidOperationException("Failed to initialize FMS system", ex);
+            }
         }
 
-        public string ReadFromJson(string filePath) => File.ReadAllText(filePath);
-
-        public void SaveFlight(Flight flight)
+        public string ReadFromJson(string filePath)
         {
-            string json = flight.ConvertToJson();
-
-            string flighFile = flight.Number + ".json";
-
-            string path = Path.Combine(FlightFolderPath, flighFile);
-
-            WriteJsonToFile(path, json);
-        }
-
-        public void SaveAirplane(Airplane airplane)
-        {
-            string json = airplane.ConvertToJson();
-            string reg = airplane.Registration + ".json";
-            string path = Path.Combine(this.AircraftFolderPath, reg);
-            this.WriteJsonToFile(path, json);
+            try
+            {
+                return File.ReadAllText(filePath);
+            }
+            catch (Exception ex) when (ex is FileNotFoundException)
+            {
+                throw new FileNotFoundException($"JSON file not found: {filePath}", ex);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to read JSON file: {filePath}", ex);
+            }
         }
 
         public void DeleteAirplane(Airplane airplane)
         {
-            string airplanePath = Path.Combine(AircraftFolderPath, airplane.Registration + ".json");
-            if (File.Exists(airplanePath))
+            try
             {
-                File.Delete(airplanePath);
+                string airplanePath = Path.Combine(AircraftFolderPath, airplane.Registration + ".json");
+                if (File.Exists(airplanePath))
+                {
+                    File.Delete(airplanePath);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to delete airplane file for registration: {airplane.Registration}", ex);
             }
         }
-        
+
         public string[] ReadAirplaneFromFolder()
         {
-            return Directory.GetFiles(AircraftFolderPath);
-        }
-
-        public void SaveStaff(List<Staff> staffList)
-        {
-
-            foreach (Staff staff in staffList)
+            try
             {
-                string json = staff.ConvertToJson();
-                string code = staff.staff_code + ".json";
-                string path = Path.Combine(this.StaffFolderPath, code);
-                WriteJsonToFile(path, json);
+                return Directory.GetFiles(AircraftFolderPath);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException("Failed to read airplane files from folder", ex);
             }
         }
-        
-        private bool DoesStaffExist(string staffCode) => File.Exists(Path.Combine(StaffFolderPath, staffCode + ".json"));
+
+        private bool DoesStaffExist(string staffCode)
+        {
+            try
+            {
+                return File.Exists(Path.Combine(StaffFolderPath, staffCode + ".json"));
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is PathTooLongException)
+            {
+                throw new ArgumentException($"Invalid staff code: {staffCode}", ex);
+            }
+        }
 
         public List<Staff> ReadStaffFromFolder()
         {
             List<Staff> staffList = new List<Staff>();
-        
-            // Get only .json files in the folder
-            string[] files = Directory.GetFiles(StaffFolderPath, "*.json");
-
-            foreach (string file in files)
+            
+            try
             {
-                if (!DoesStaffExist(file))
-                {
-                    try
-                    {
-                        // Read JSON content
-                        string json = File.ReadAllText(file);
+                string[] files = Directory.GetFiles(StaffFolderPath, "*.json");
 
-                        // Skip if file is empty
-                        if (string.IsNullOrWhiteSpace(json))
+                foreach (string file in files)
+                {
+                    if (!DoesStaffExist(file))
+                    {
+                        try
                         {
-                            Console.WriteLine($"Skipped empty file: {file}");
+                            string json = File.ReadAllText(file);
+
+                            if (string.IsNullOrWhiteSpace(json))
+                            {
+                                Console.WriteLine($"Skipped empty file: {file}");
+                                continue;
+                            }
+
+                            Staff staff = JsonSerializer.Deserialize<Staff>(json, new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            });
+                        
+                            if (staff != null)
+                            {
+                                staffList.Add(staff);
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
+                            // Continue processing other files
                             continue;
                         }
-                        Staff staff = JsonSerializer.Deserialize<Staff>(json, new JsonSerializerOptions
+                        catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
                         {
-                            PropertyNameCaseInsensitive = true
-                        });
-                    
-                        if (staff != null)
-                        {
-                            staffList.Add(staff);
+                            Console.WriteLine($"Error reading file {file}: {ex.Message}");
+                            // Continue processing other files
+                            continue;
                         }
                     }
-                    catch (JsonException ex)
-                    {
-                        // Handle JSON-specific exceptions
-                        Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle any other exceptions (e.g., file read issues)
-                        Console.WriteLine($"Error reading file {file}: {ex.Message}");
-                    }
                 }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException("Failed to read staff folder", ex);
             }
 
             return staffList;
         }
 
-        public List<string> GetPassangerNames()
+        public List<string> GetPassengerNames()
         {
-            List<string> namesList = new List<string>();
-            string[] names = File.ReadAllLines(NamesFile);
-            foreach (string name in names)
+            try
             {
-                namesList.Add(name);
+                List<string> namesList = new List<string>();
+                string[] names = File.ReadAllLines(NamesFile);
+                namesList.AddRange(names);
+                return namesList;
             }
-            return namesList;
+            catch (FileNotFoundException ex)
+            {
+                throw new FileNotFoundException($"Names file not found: {NamesFile}", ex);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to read names file: {NamesFile}", ex);
+            }
         }
 
-        public List<string> GetPassangerSurnames()
+        public List<string> GetPassengerSurnames()
         {
-            List<string> surnamesList = new List<string>();
-            string[] surnames = File.ReadAllLines(SurnamesFile);
-            foreach (string surname in surnames)
+            try
             {
-                surnamesList.Add(surname);
+                List<string> surnamesList = new List<string>();
+                string[] surnames = File.ReadAllLines(SurnamesFile);
+                surnamesList.AddRange(surnames);
+                return surnamesList;
             }
-
-            return surnamesList;
+            catch (FileNotFoundException ex)
+            {
+                throw new FileNotFoundException($"Surnames file not found: {SurnamesFile}", ex);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to read surnames file: {SurnamesFile}", ex);
+            }
         }
+
+        private string GetEntityFolderPath(EntityType entity)
+        {
+            try
+            {
+                switch (entity)
+                {
+                    case EntityType.Airplane:
+                        return AircraftFolderPath;
+                    case EntityType.Passenger:
+                        return PassengerFolderPath;
+                    case EntityType.Flight:
+                        return FlightFolderPath;
+                    case EntityType.Staff:
+                        return StaffFolderPath;
+                    default:
+                        throw new ArgumentException($"Invalid entity type: {entity}", nameof(entity));
+                }
+            }
+            catch (Exception ex) when (ex is ArgumentException)
+            {
+                throw new ArgumentException("Failed to get entity folder path", ex);
+            }
+        }
+
+        public void Save(IStorable entity)
+        {
+            try
+            {
+                string json = entity.ConvertToJson();
+                string name = entity.GetIdentifier();
+                string path = GetEntityFolderPath(entity.GetEntityType());
+                string fullPath = Path.Combine(path, name + ".json");
+                WriteJsonToFile(fullPath, json);
+            }
+            catch (Exception ex) when (ex is ArgumentNullException)
+            {
+                throw new ArgumentNullException("Entity cannot be null", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to save entity", ex);
+            }
+        }
+
         ~FMS() { }
     }
 }

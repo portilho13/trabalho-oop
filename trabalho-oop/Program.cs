@@ -6,32 +6,44 @@ namespace trabalho_oop
     {
         static void Main(string[] args)
         {
-            
-            FMS fms = new FMS(); // Start new file managment system
-            fms.Start();
+            // Create an instance of Logger
+            Logger logger = Logger.Instance("./fms/logs/app.log");
 
-            fms.GetPassangerSurnames();
-            
-            SessionManager sessionManager = new SessionManager();
-            sessionManager.fms = fms;
+            try
+            {
+                // Start the FMS
+                FMS fms = new FMS(); // Start new file management system
+                fms.Start();
+                
+                // Create SessionManager
+                SessionManager sessionManager = new SessionManager();
+                sessionManager.fms = fms;
 
-            sessionManager.Load();
-            
-            sessionManager.DisplayStaffList();
-            
-            sessionManager.RegisterStaff("Junior", "junior.portilho2005@gmail.com", "junior");
-            
-            Airplane ryanair = new Airplane("Ryanair", "EI-GSG", fms, 186);
-            fms.SaveAirplane(ryanair);
+                // Load the session
+                sessionManager.Load();
+                
+                // Display staff list
+                sessionManager.DisplayStaffList();
 
-            Flight flight = new Flight("RYR4703","Porto", "Milan", ryanair, fms);
+                // Register a new staff member
+                sessionManager.RegisterStaff("Junior", "junior.portilho2005@gmail.com", "junior");
 
-            flight.DisplayPassengers();
-            fms.SaveFlight(flight);
-            
-            sessionManager.Save();
-            
+                // Create a new Airplane
+                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186);
+                fms.Save(ryanair); // Save the Airplane instance
+
+                // Create a new Flight
+                Flight flight = new Flight("RYR4703", "Porto", "Milan", ryanair, fms);
+                fms.Save(flight); // Save the Flight instance
+                
+                // Save session data
+                sessionManager.Save();
+            }
+            catch (Exception ex)
+            {
+                // Log any exceptions
+                logger.Error($"An error occurred: {ex.Message}");
+            }
         }
     }
-};
-
+}
