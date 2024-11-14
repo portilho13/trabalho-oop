@@ -7,12 +7,13 @@ namespace trabalho_oop
     public class Passenger : Person, IStorable
     {
         public string password;
-        public string Id { get; set; } = GenerateRandomId();
-        public Dictionary<string, Reservation> Reservations { get; set; } = new Dictionary<string, Reservation>();
+        public string Id { get; set; }
+        public Dictionary<string, Reservation> Reservations { get; private set; } = new Dictionary<string, Reservation>();
 
         // Parameterless constructor (needed for deserialization)
-        public Passenger() 
+        public Passenger()
         {
+            Id = GenerateRandomId();
         }
 
         public string GetIdentifier() => Id;

@@ -20,7 +20,8 @@ namespace trabalho_oop
         {
             FlightFolderPath,
             AircraftFolderPath,
-            StaffFolderPath
+            StaffFolderPath,
+            PassengerFolderPath
         };
 
         public FMS()
@@ -327,7 +328,8 @@ namespace trabalho_oop
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to save entity", ex);
+                Console.WriteLine($"Failed to write json to file: {ex.Message}");
+                throw new InvalidOperationException($"Failed to save entity {entity.GetEntityType()}", ex);
             }
         }
 

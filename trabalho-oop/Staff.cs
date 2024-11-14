@@ -1,69 +1,160 @@
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.IO;
 
 namespace trabalho_oop
 {
-    public class Staff: Person, IStorable
+    public class Staff : Person, IStorable
     {
-        private static Logger logger = Logger.Instance("./fms/logs/app.log");  // Logger instance for logging
+        private static Logger logger;
+        
+        // Initialize logger with exception handling
+        static Staff()
+        {
+            try
+            {
+                logger = Logger.Instance("./fms/logs/app.log");
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Failed to initialize logger: {ex.Message}");
+                // Fallback to create logs directory if it doesn't exist
+                Directory.CreateDirectory("./fms/logs");
+                logger = Logger.Instance("./fms/logs/app.log");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error initializing logger: {ex.Message}");
+                throw;
+            }
+        }
 
         public string staffCode { get; set; }
         public string password { get; set; }
 
-        // Converts the object to JSON
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+        // Converts the object to JSON with exception handling
+        public string ConvertToJson()
+        {
+            try
+            {
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+            }
+            catch (JsonException ex)
+            {
+                logger.Error($"Failed to serialize Staff object: {ex.Message}");
+                throw new InvalidOperationException("Failed to convert Staff to JSON", ex);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Unexpected error during JSON serialization: {ex.Message}");
+                throw;
+            }
+        }
 
         public EntityType GetEntityType() => EntityType.Staff;
         public string GetIdentifier() => staffCode;
 
-        // Generates a random staff code
+        // Generates a random staff code with exception handling
         private string GenerateStaffCode()
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var staffCode = new char[6];
-
-            for (int i = 0; i < staffCode.Length; i++)
+            try
             {
-                staffCode[i] = chars[random.Next(chars.Length)];
-            }
+                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                var random = new Random();
+                var staffCode = new char[6];
 
-            return new string(staffCode);
+                for (int i = 0; i < staffCode.Length; i++)
+                {
+                    staffCode[i] = chars[random.Next(chars.Length)];
+                }
+
+                string generatedCode = new string(staffCode);
+                
+                if (string.IsNullOrEmpty(generatedCode))
+                {
+                    throw new InvalidOperationException("Generated staff code is empty");
+                }
+
+                return generatedCode;
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to generate staff code: {ex.Message}");
+                throw new InvalidOperationException("Failed to generate staff code", ex);
+            }
         }
 
-        // Hashes the password
+        // Hashes the password with exception handling
         private string HashPassword(string password)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
+            if (string.IsNullOrEmpty(password))
             {
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
-                
-                StringBuilder hashString = new StringBuilder();
-                foreach (byte b in hashBytes)
+                throw new ArgumentNullException(nameof(password), "Password cannot be null or empty");
+            }
+
+            try
+            {
+                using (SHA256 sha256Hash = SHA256.Create())
                 {
-                    hashString.Append(b.ToString("x2"));
+                    byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                    byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
+                    
+                    StringBuilder hashString = new StringBuilder();
+                    foreach (byte b in hashBytes)
+                    {
+                        hashString.Append(b.ToString("x2"));
+                    }
+                    
+                    return hashString.ToString();
                 }
-                
-                return hashString.ToString();
+            }
+            catch (CryptographicException ex)
+            {
+                logger.Error($"Cryptographic error while hashing password: {ex.Message}");
+                throw new InvalidOperationException("Failed to hash password", ex);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Unexpected error while hashing password: {ex.Message}");
+                throw;
             }
         }
 
-        // Set and hash the password, then log the action
+        // Set and hash the password with exception handling
         public void SetPassword(string password)
         {
-            this.password = HashPassword(password);
-            logger.Info($"Password set for staff member: {staffCode}.");
+            try
+            {
+                this.password = HashPassword(password);
+                logger.Info($"Password set for staff member: {staffCode}.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to set password for staff member {staffCode}: {ex.Message}");
+                throw new InvalidOperationException($"Failed to set password for staff member {staffCode}", ex);
+            }
         }
 
-        // Constructor to create a staff member with a unique staff code
+        // Constructor with exception handling
         public Staff()
         {
-            this.staffCode = GenerateStaffCode();
-            logger.Info($"New staff created with staff code: {staffCode}.");
+            try
+            {
+                this.staffCode = GenerateStaffCode();
+                logger.Info($"New staff created with staff code: {staffCode}.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to create new staff member: {ex.Message}");
+                throw new InvalidOperationException("Failed to create new staff member", ex);
+            }
         }
 
-        ~Staff() {}
+        ~Staff()
+        {
+            // Destructor doesn't need exception handling as it shouldn't throw exceptions
+        }
     }
 }

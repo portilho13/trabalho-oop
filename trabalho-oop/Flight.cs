@@ -25,17 +25,14 @@ namespace trabalho_oop
             return random.Next(100, Airplane.Capacity); // Random number between 100 (to be realistic) and Airplane maximum capacity
         }
 
-        public void AddReservation(Reservation reservation)
+        public void AddReservation(Passenger passenger)
         {
-            if (!PassengersReservations.ContainsKey(reservation.ReservationCode))
+            Reservation reservation;
+            do
             {
-                PassengersReservations.Add(reservation.ReservationCode, reservation);
-                Logger.Instance().Info($"Reservation with code {reservation.ReservationCode} added.");
-            }
-            else
-            {
-                Logger.Instance().Error($"Reservation with code {reservation.ReservationCode} already exists.");
-            }
+                reservation = new Reservation(passenger);
+            }while(PassengersReservations.ContainsKey(reservation.ReservationCode));
+            passenger.AddReservation(reservation);
         }
 
         public Flight(string number, string origin, string destination, Airplane airplane, FMS fms)

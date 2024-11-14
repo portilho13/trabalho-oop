@@ -7,124 +7,337 @@ namespace trabalho_oop
 {
     public class SessionManager
     {
-        private Session activeSession;
+        public Session activeSession;
+        private readonly List<Staff> _staff;
+        private readonly List<Passenger> _passengers;
+        private FMS _fms;
 
-        private List<Staff> _staff = new List<Staff>();
-        private List<Passenger> _passengers = new List<Passenger>();
-        public FMS fms { private get; set; }
+        public FMS fms
+        {
+            private get => _fms;
+            set => _fms = value ?? throw new ArgumentNullException(nameof(value), "FMS cannot be null");
+        }
         
-        private static Logger logger = Logger.Instance("./fms/logs/app.log");  // Logger instance for logging
 
-        // Login method for Staff
+        public SessionManager()
+        {
+            try
+            {
+                _staff = new List<Staff>();
+                _passengers = new List<Passenger>();
+                Logger.Instance().Info("SessionManager initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Failed to initialize SessionManager: {ex.Message}");
+                throw new InvalidOperationException("Failed to initialize SessionManager", ex);
+            }
+        }
+
         public bool LoginStaff(string staffCode, string password)
         {
-            Staff staff = _staff.Find(s => s.staffCode == staffCode && s.password == CreateHashPassword(password));
-            if (staff != null)
+            try
             {
-                activeSession = new Session(staff);
-                logger.Info($"Staff login successful: {staff.Name} ({staff.Email})");
-                return true;
+                if (string.IsNullOrWhiteSpace(staffCode))
+                    throw new ArgumentException("Staff code cannot be empty", nameof(staffCode));
+                
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
+
+                if (_staff == null)
+                    throw new InvalidOperationException("Staff list not initialized");
+
+                string hashedPassword = CreateHashPassword(password);
+                Staff staff = _staff.Find(s => s.staffCode == staffCode && s.password == hashedPassword);
+                
+                if (staff != null)
+                {
+                    activeSession = new Session(staff);
+                    Logger.Instance().Info($"Staff login successful: {staff.Name} ({staff.Email})");
+                    return true;
+                }
+                
+                Logger.Instance().Warn($"Staff login failed: Invalid credentials for {staffCode}");
+                return false;
             }
-            logger.Warn($"Staff login failed: Invalid credentials for {staffCode}");
-            return false;
+            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
+            {
+                Logger.Instance().Error($"Error during staff login: {ex.Message}");
+                throw new InvalidOperationException("Failed to process staff login", ex);
+            }
         }
 
-        // Create hashed password for staff login validation
         private string CreateHashPassword(string password)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
+            try
             {
-                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
-                StringBuilder hashString = new StringBuilder();
-                foreach (byte b in hashBytes)
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
+
+                using (SHA256 sha256Hash = SHA256.Create())
                 {
-                    hashString.Append(b.ToString("x2"));
+                    byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                    byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
+                    StringBuilder hashString = new StringBuilder();
+                    
+                    foreach (byte b in hashBytes)
+                    {
+                        hashString.Append(b.ToString("x2"));
+                    }
+                    
+                    return hashString.ToString();
                 }
-                return hashString.ToString();
+            }
+            catch (Exception ex) when (ex is not ArgumentException)
+            {
+                Logger.Instance().Error("Error creating password hash");
+                throw new InvalidOperationException("Failed to create password hash", ex);
             }
         }
 
-        // Load staff data from FMS
         public void Load()
         {
-            _staff = fms.ReadStaffFromFolder();
-            logger.Info("Staff data loaded from FMS.");
+            try
+            {
+                if (_fms == null)
+                    throw new InvalidOperationException("FMS not initialized");
+
+                _staff.Clear();
+                var loadedStaff = _fms.ReadStaffFromFolder();
+                
+                if (loadedStaff != null)
+                    _staff.AddRange(loadedStaff);
+                
+                Logger.Instance().Info("Staff data loaded from FMS");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Failed to load staff data: {ex.Message}");
+                throw new InvalidOperationException("Failed to load staff data from FMS", ex);
+            }
         }
 
-        // Login method for Passenger
         public bool LoginPassenger(string email, string password)
         {
-            Passenger passenger = _passengers.Find(s => s.Email == email && s.password == password);
-            if (passenger != null)
+            try
             {
-                activeSession = new Session(passenger);
-                logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
-                return true;
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("Email cannot be empty", nameof(email));
+                
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
+
+                if (_passengers == null)
+                    throw new InvalidOperationException("Passenger list not initialized");
+
+                Passenger passenger = _passengers.Find(s => s.Email == email && s.password == password);
+                
+                if (passenger != null)
+                {
+                    activeSession = new Session(passenger);
+                    Logger.Instance().Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
+                    return true;
+                }
+                
+                Logger.Instance().Warn($"Passenger login failed: Invalid credentials for {email}");
+                return false;
             }
-            logger.Warn($"Passenger login failed: Invalid credentials for {email}");
-            return false;
+            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
+            {
+                Logger.Instance().Error($"Error during passenger login: {ex.Message}");
+                throw new InvalidOperationException("Failed to process passenger login", ex);
+            }
         }
 
-        // Logout method
         public void Logout()
         {
-            logger.Info("Logging out.");
-            activeSession = null;
+            try
+            {
+                if (activeSession?.LoggedInPerson != null)
+                {
+                    Logger.Instance().Info($"User {activeSession.LoggedInPerson.Name} logged out");
+                }
+                activeSession = null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Error during logout: {ex.Message}");
+                throw new InvalidOperationException("Failed to process logout", ex);
+            }
         }
 
-        // Check if there is an active session
         public bool IsAuthenticated()
         {
-            return activeSession != null;
+            try
+            {
+                return activeSession != null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Error checking authentication status: {ex.Message}");
+                throw new InvalidOperationException("Failed to check authentication status", ex);
+            }
         }
 
-        // Get the currently logged in user (Staff or Passenger)
+        public void DisplayStaff()
+        {
+            foreach (Staff staff in _staff)
+            {
+                Console.WriteLine(staff.ToString());
+            }
+        }
+
         public Person GetLoggedInPerson()
         {
-            return activeSession?.LoggedInPerson;
+            try
+            {
+                return activeSession?.LoggedInPerson;
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Error retrieving logged in person: {ex.Message}");
+                throw new InvalidOperationException("Failed to retrieve logged in person", ex);
+            }
         }
 
-        // Register new staff
         public void RegisterStaff(string name, string email, string password)
         {
-            Staff staff = _staff.Find(s => s.Email == email);
-            if (staff != null)
+            try
             {
-                logger.Warn($"Staff registration failed: Email {email} already exists.");
-                return;
-            }
-            Staff newStaff = new Staff
-            {
-                Name = name,
-                Email = email
-            };
-            newStaff.SetPassword(password);
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new ArgumentException("Name cannot be empty", nameof(name));
+                
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("Email cannot be empty", nameof(email));
+                
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
 
-            _staff.Add(newStaff);
-            logger.Info($"New staff registered: {name} ({email})");
+                if (_staff == null)
+                    throw new InvalidOperationException("Staff list not initialized");
+
+                Staff existingStaff = _staff.Find(s => s.Email == email);
+                if (existingStaff != null)
+                {
+                    Logger.Instance().Warn($"Staff registration failed: Email {email} already exists");
+                    throw new InvalidOperationException($"Email {email} is already registered");
+                }
+
+                Staff newStaff = new Staff
+                {
+                    Name = name,
+                    Email = email
+                };
+                newStaff.SetPassword(password);
+
+                _staff.Add(newStaff);
+                Logger.Instance().Info($"New staff registered: {name} ({email})");
+            }
+            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
+            {
+                Logger.Instance().Error($"Error during staff registration: {ex.Message}");
+                throw new InvalidOperationException("Failed to register staff", ex);
+            }
+        }
+        
+        public void RegisterPassanger(string name, string email, string password)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new ArgumentException("Name cannot be empty", nameof(name));
+                
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("Email cannot be empty", nameof(email));
+                
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
+
+                if (_passengers == null)
+                    throw new InvalidOperationException("Staff list not initialized");
+
+                Passenger p = _passengers.Find(s => s.Email == email);
+                if (p != null)
+                {
+                    Logger.Instance().Warn($"Staff registration failed: Email {email} already exists");
+                    throw new InvalidOperationException($"Email {email} is already registered");
+                }
+
+                Passenger passenger = new Passenger()
+                {
+                    Name = name,
+                    Email = email
+                };
+                passenger.password = password;
+
+                _passengers.Add(passenger);
+                Logger.Instance().Info($"New passenger registered: {name} ({email})");
+            }
+            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
+            {
+                Logger.Instance().Error($"Error during passenger registration: {ex.Message}");
+                throw new InvalidOperationException("Failed to register passenger", ex);
+            }
         }
 
-        // Save staff and passenger data to FMS
         public void Save()
         {
-            foreach (Staff staff in _staff)
-                fms.Save(staff);
+            try
+            {
+                if (_fms == null)
+                    throw new InvalidOperationException("FMS not initialized");
 
-            foreach (Passenger passenger in _passengers)
-                fms.Save(passenger);
+                if (_staff == null || _passengers == null)
+                    throw new InvalidOperationException("Staff or passenger list not initialized");
 
-            logger.Info("Staff and Passenger data saved to FMS.");
+                foreach (Staff staff in _staff)
+                {
+                    if (staff != null)
+                        _fms.Save(staff);
+                }
+
+                foreach (Passenger passenger in _passengers)
+                {
+                    if (passenger != null)
+                        _fms.Save(passenger);
+                }
+
+                Logger.Instance().Info("Staff and Passenger data saved to FMS");
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Failed to save data: {ex.Message}");
+                throw new InvalidOperationException("Failed to save data to FMS", ex);
+            }
         }
 
-        // Display staff list
         public void DisplayStaffList()
         {
-            foreach (Staff staff in _staff)
+            try
             {
-                Console.WriteLine(staff.Name);
-                Console.WriteLine(staff.Email);
-                Console.WriteLine(staff.staffCode);
+                if (_staff == null)
+                    throw new InvalidOperationException("Staff list not initialized");
+
+                if (!_staff.Any())
+                {
+                    Console.WriteLine("No staff members found.");
+                    return;
+                }
+
+                foreach (Staff staff in _staff)
+                {
+                    if (staff != null)
+                    {
+                        Console.WriteLine(staff.Name);
+                        Console.WriteLine(staff.Email);
+                        Console.WriteLine(staff.staffCode);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance().Error($"Error displaying staff list: {ex.Message}");
+                throw new InvalidOperationException("Failed to display staff list", ex);
             }
         }
     }

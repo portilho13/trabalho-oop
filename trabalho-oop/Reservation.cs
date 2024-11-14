@@ -12,9 +12,13 @@ namespace trabalho_oop
         public string ReservationCode { get; private set; }
         public Person Passenger { get; set; }
 
-        public Reservation()
+        public Reservation(Passenger passenger)
         {
+            Passenger = passenger;
+            GenerateReservationCode();
         }
+        
+        public Reservation() {}
 
         public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
 
@@ -37,6 +41,7 @@ namespace trabalho_oop
             this.ReservationCode = new string(reservationCode);
             
         }
+        
 
         ~Reservation()
         {
