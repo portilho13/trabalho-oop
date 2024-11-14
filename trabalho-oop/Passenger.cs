@@ -8,6 +8,7 @@ namespace trabalho_oop
     {
         public string password;
         public string Id { get; set; }
+        
         public Dictionary<string, Reservation> Reservations { get; private set; } = new Dictionary<string, Reservation>();
 
         // Parameterless constructor (needed for deserialization)
@@ -17,8 +18,24 @@ namespace trabalho_oop
         }
 
         public string GetIdentifier() => Id;
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
+        public string ConvertToJson()
+        {
+            try
+            {
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true 
+                });
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to serialize passenger {Name} to JSON", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error while converting passenger {Name} to JSON", ex);
+            }
+        }
         public EntityType GetEntityType() => EntityType.Passenger;
 
         private static string GenerateRandomId()

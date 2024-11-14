@@ -6,12 +6,14 @@ namespace trabalho_oop
     public class Airplane : IStorable
     {
         // Public properties with private setters to enforce immutability after construction
-        public string Company { get; private set; }
-        public string Registration { get; private set; }
-        public bool IsOccupied { get; private set; }
-        public int Capacity { get; private set; }
+        public string Company { get;  set; }
+        public string Registration { get; set; }
+        public bool IsOccupied { get; set; }
+        public int Capacity { get; set; }
         
-        public int Model { get; private set; }
+        public string Model { get; set; }
+        
+        public Airplane() {}
 
         // Constructor to initialize the essential properties, with validation
         public Airplane(string company, string registration, int capacity, string model)
@@ -24,6 +26,7 @@ namespace trabalho_oop
                 Registration = registration;
                 Capacity = capacity;
                 IsOccupied = false;  // Default value
+                Model = model;
 
                 Logger.Instance().Info($"Airplane {Registration} created successfully. Company: {Company}, Capacity: {Capacity}");
             }

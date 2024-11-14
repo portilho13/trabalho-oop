@@ -4,14 +4,20 @@ namespace trabalho_oop;
 
 public class Fleet
 {
-    private Dictionary<string, Airplane> fleet;
+    private Dictionary<string, Airplane> fleet = new Dictionary<string, Airplane>();
     
     public FMS Fms { get; set; }
 
     public Fleet(FMS fms)
     {
         Fms = fms;
-        fleet = new Dictionary<string, Airplane>();
+    }
+
+    private bool DoesPlaneExist(string Resistration) => fleet.ContainsKey(Resistration);
+
+    public Airplane GetAirplane(string Resistration)
+    {
+        return fleet[Resistration];
     }
 
     public void AddAirplane(Airplane airplane)
@@ -37,11 +43,7 @@ public class Fleet
             Console.WriteLine(airplane.Registration);
         }
     }
-
-    public Airplane GetAirplane(string registration)
-    {
-        return fleet[registration];
-    }
+    
 
     public void RemoveAirplane(string registration)
     {

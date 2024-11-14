@@ -3,13 +3,14 @@ using System.Text.Json;
 
 namespace trabalho_oop
 {
+    [Serializable]
     public class Reservation : IStorable
     {
         private static Logger logger = Logger.Instance("./fms/logs/app.log");
 
         public FMS Fms { private get; set; }
 
-        public string ReservationCode { get; private set; }
+        [NonSerialized] public string ReservationCode;
         public Person Passenger { get; set; }
 
         public Reservation(Passenger passenger)
@@ -20,8 +21,24 @@ namespace trabalho_oop
         
         public Reservation() {}
 
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
+        public string ConvertToJson()
+        {
+            try
+            {
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true 
+                });
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to serialize passenger {ReservationCode} to JSON", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error while converting passenger {ReservationCode} to JSON", ex);
+            }
+        }
         public string GetIdentifier() => ReservationCode;
 
         public EntityType GetEntityType() => EntityType.Reservation;

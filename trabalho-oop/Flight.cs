@@ -15,8 +15,24 @@ namespace trabalho_oop
 
         public string GetIdentifier() => Number;
 
-        public string ConvertToJson() => JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-
+        public string ConvertToJson()
+        {
+            try
+            {
+                return JsonSerializer.Serialize(this, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true 
+                });
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to serialize flight {Number} to JSON", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error while converting airplane {Number} to JSON", ex);
+            }
+        }
         public EntityType GetEntityType() => EntityType.Flight;
 
         private int GenerateRandomNumberOfPassengers()
@@ -33,6 +49,7 @@ namespace trabalho_oop
                 reservation = new Reservation(passenger);
             }while(PassengersReservations.ContainsKey(reservation.ReservationCode));
             passenger.AddReservation(reservation);
+            PassengersReservations.Add(reservation.ReservationCode, reservation);
         }
 
         public Flight(string number, string origin, string destination, Airplane airplane, FMS fms)

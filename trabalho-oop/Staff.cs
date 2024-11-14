@@ -13,22 +13,6 @@ namespace trabalho_oop
         // Initialize logger with exception handling
         static Staff()
         {
-            try
-            {
-                logger = Logger.Instance("./fms/logs/app.log");
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine($"Failed to initialize logger: {ex.Message}");
-                // Fallback to create logs directory if it doesn't exist
-                Directory.CreateDirectory("./fms/logs");
-                logger = Logger.Instance("./fms/logs/app.log");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error initializing logger: {ex.Message}");
-                throw;
-            }
         }
 
         public string staffCode { get; set; }
@@ -44,7 +28,7 @@ namespace trabalho_oop
             catch (JsonException ex)
             {
                 logger.Error($"Failed to serialize Staff object: {ex.Message}");
-                throw new InvalidOperationException("Failed to convert Staff to JSON", ex);
+                throw new InvalidOperationException($"Failed to convert Staff {Name} to JSON", ex);
             }
             catch (Exception ex)
             {

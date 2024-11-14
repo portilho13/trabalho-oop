@@ -36,16 +36,18 @@ namespace trabalho_oop
                 {
                     p = passanger;
                 }
-                
 
+                Fleet fleet = new Fleet(fms);
+                fleet.LoadFleet();
+                fleet.ShowAircraftList();
                 // Create a new Airplane
-                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738");
-                fms.Save(ryanair); // Save the Airplane instance
+                //Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738");
+                //fms.Save(ryanair); // Save the Airplane instance
                 
                 // Create a new Flight
-                Flight flight = new Flight("RYR4703", "Porto", "Milan", ryanair, fms);
-                flight.AddReservation(p);
-                fms.Save(flight); // Save the Flight instance
+                //Flight flight = new Flight("RYR4703", "Porto", "Milan", ryanair, fms);
+                //flight.AddReservation(p);
+                //fms.Save(flight); // Save the Flight instance
                 
                 // Save session data
                 sessionManager.Save();
