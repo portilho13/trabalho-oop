@@ -17,16 +17,16 @@ namespace trabalho_oop
                 
                 // Create SessionManager
                 SessionManager sessionManager = new SessionManager();
-                sessionManager.fms = FMS.Instance;
 
                 // Load the session
                 sessionManager.Load();
+                sessionManager.DisplayStaff();
                 
                 // Display staff list
-                sessionManager.DisplayStaffList();
+                sessionManager.DisplayPassengers();
 
                 // Register a new staff member
-                sessionManager.RegisterPassanger("Junior", "junior.portilho2005@gmail.com", "junior");
+                //sessionManager.RegisterPassanger("Junior", "junior.portilho2005@gmail.com", "junior");
                 sessionManager.LoginPassenger("junior.portilho2005@gmail.com", "junior");
                 sessionManager.IsAuthenticated();
 
@@ -42,12 +42,14 @@ namespace trabalho_oop
                 fleet.ShowAircraftList();
                 // Create a new Airplane
                 Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738");
-                //fms.Save(ryanair); // Save the Airplane instance
+                FMS.Instance.Save(ryanair); // Save the Airplane instance
+
+                //Airplane r = fleet.GetAirplane("EI-GSG");
                 
                 // Create a new Flight
-                //Flight flight = new Flight("RYR4703", "Porto", "Milan", ryanair, fms);
-                //flight.AddReservation(p);
-                //FMS.Instance.Save(flight); // Save the Flight instance
+                Flight flight = new Flight("RYR4704", "Porto", "Milan", ryanair);
+                flight.AddReservation(p);
+                FMS.Instance.Save(flight); // Save the Flight instance
                 
                 // Save session data
                 sessionManager.Save();

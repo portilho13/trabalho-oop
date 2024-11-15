@@ -10,13 +10,7 @@ namespace trabalho_oop
         public Session ActiveSession;
         private readonly List<Staff> _staff;
         private readonly List<Passenger> _passengers;
-        private FMS _fms;
-
-        public FMS fms
-        {
-            private get => _fms;
-            set => _fms = value ?? throw new ArgumentNullException(nameof(value), "FMS cannot be null");
-        }
+        
         
         
 
@@ -100,14 +94,18 @@ namespace trabalho_oop
         {
             try
             {
-                if (_fms == null)
-                    throw new InvalidOperationException("FMS not initialized");
 
                 _staff.Clear();
-                var loadedStaff = _fms.ReadStaffFromFolder();
+                var loadedStaff = FMS.Instance.ReadStaffFromFolder();
                 
                 if (loadedStaff != null)
                     _staff.AddRange(loadedStaff);
+                
+                _passengers.Clear();
+                
+                var loadedPassenger = FMS.Instance.ReadPassengersFromFolder();
+                if(loadedPassenger != null)
+                    _passengers.AddRange(loadedPassenger);
                 
                 Logger.Instance().Info("Staff data loaded from FMS");
             }
@@ -185,6 +183,14 @@ namespace trabalho_oop
             foreach (Staff staff in _staff)
             {
                 Console.WriteLine(staff.ToString());
+            }
+        }
+        
+        public void DisplayPassengers()
+        {
+            foreach (Passenger passenger in _passengers)
+            {
+                Console.WriteLine($"Passenger: {passenger.ToString()}");
             }
         }
 
@@ -295,8 +301,6 @@ namespace trabalho_oop
         {
             try
             {
-                if (_fms == null)
-                    throw new InvalidOperationException("FMS not initialized");
 
                 if (_staff == null || _passengers == null)
                     throw new InvalidOperationException("Staff or passenger list not initialized");
@@ -304,13 +308,13 @@ namespace trabalho_oop
                 foreach (Staff staff in _staff)
                 {
                     if (staff != null)
-                        _fms.Save(staff);
+                        FMS.Instance.Save(staff);
                 }
 
                 foreach (Passenger passenger in _passengers)
                 {
                     if (passenger != null)
-                        _fms.Save(passenger);
+                        FMS.Instance.Save(passenger);
                 }
 
                 Logger.Instance().Info("Staff and Passenger data saved to FMS");
@@ -319,36 +323,6 @@ namespace trabalho_oop
             {
                 Logger.Instance().Error($"Failed to save data: {ex.Message}");
                 throw new InvalidOperationException("Failed to save data to FMS", ex);
-            }
-        }
-
-        public void DisplayStaffList()
-        {
-            try
-            {
-                if (_staff == null)
-                    throw new InvalidOperationException("Staff list not initialized");
-
-                if (!_staff.Any())
-                {
-                    Console.WriteLine("No staff members found.");
-                    return;
-                }
-
-                foreach (Staff staff in _staff)
-                {
-                    if (staff != null)
-                    {
-                        Console.WriteLine(staff.Name);
-                        Console.WriteLine(staff.Email);
-                        Console.WriteLine(staff.staffCode);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance().Error($"Error displaying staff list: {ex.Message}");
-                throw new InvalidOperationException("Failed to display staff list", ex);
             }
         }
     }

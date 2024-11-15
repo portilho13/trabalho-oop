@@ -251,6 +251,61 @@ namespace trabalho_oop
 
             return staffList;
         }
+        
+        public List<Passenger> ReadPassengersFromFolder()
+        {
+            List<Passenger> passengerList = new List<Passenger>();
+            
+            try
+            {
+                string[] files = Directory.GetFiles(PassengerFolderPath, "*.json");
+
+                foreach (string file in files)
+                {
+                    if (!DoesStaffExist(file))
+                    {
+                        try
+                        {
+                            string json = File.ReadAllText(file);
+
+                            if (string.IsNullOrWhiteSpace(json))
+                            {
+                                Console.WriteLine($"Skipped empty file: {file}");
+                                continue;
+                            }
+
+                            Passenger passenger = JsonSerializer.Deserialize<Passenger>(json, new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            });
+                        
+                            if (passenger != null)
+                            {
+                                passengerList.Add(passenger);
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
+                            // Continue processing other files
+                            continue;
+                        }
+                        catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                        {
+                            Console.WriteLine($"Error reading file {file}: {ex.Message}");
+                            // Continue processing other files
+                            continue;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException("Failed to read staff folder", ex);
+            }
+
+            return passengerList;
+        }
 
         public List<string> GetPassengerNames()
         {
