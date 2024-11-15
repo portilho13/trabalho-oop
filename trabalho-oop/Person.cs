@@ -14,7 +14,7 @@ namespace trabalho_oop
     /// Represents a person with basic contact information such as name, email, and phone number.
     /// This class serves as a base class for other entities that require personal details.
     /// </summary>
-    public class Person
+    public abstract class Person
     {
         /// <summary>
         /// Gets or sets the full name of the person.
