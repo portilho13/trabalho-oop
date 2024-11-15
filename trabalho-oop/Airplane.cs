@@ -1,16 +1,14 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace trabalho_oop
 {
     public class Airplane : IStorable
     {
         // Public properties with private setters to enforce immutability after construction
-        public string Company { get;  set; }
+        public string Company { get; set; }
         public string Registration { get; set; }
         public bool IsOccupied { get; set; }
         public int Capacity { get; set; }
-        
         public string Model { get; set; }
         
         public Airplane() {}
@@ -129,12 +127,6 @@ namespace trabalho_oop
             {
                 throw new InvalidOperationException("Failed to get entity type", ex);
             }
-        }
-
-        // Destructor (Finalizer)
-        ~Airplane()
-        {
-            Logger.Instance().Info($"Airplane {Registration} instance is being destroyed.");
         }
     }
 }

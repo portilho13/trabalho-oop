@@ -7,14 +7,18 @@ namespace trabalho_oop
 {
     public class FMS
     {
-        public static string MainFolderPath = "./fms"; // Default path for FMS
-        public static string FlightFolderPath = Path.Combine(MainFolderPath, "flights");
-        public static string AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
-        public static string StaffFolderPath = Path.Combine(MainFolderPath, "staff");
-        public static string PassengerFolderPath = Path.Combine(MainFolderPath, "passenger");
+        private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS());
 
-        private string NamesFile = "nomes.txt";
-        private string SurnamesFile = "apelidos.txt";
+        public static FMS Instance => _instance.Value;
+        
+        public static readonly string MainFolderPath = "./fms"; // Default path for FMS
+        public static readonly string FlightFolderPath = Path.Combine(MainFolderPath, "flights");
+        public static readonly string AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
+        public static readonly string StaffFolderPath = Path.Combine(MainFolderPath, "staff");
+        public static readonly string PassengerFolderPath = Path.Combine(MainFolderPath, "passenger");
+
+        private readonly string NamesFile = "nomes.txt";
+        private readonly string SurnamesFile = "apelidos.txt";
 
         private List<string> Folders = new List<string>
         {
@@ -24,9 +28,7 @@ namespace trabalho_oop
             PassengerFolderPath
         };
 
-        public FMS()
-        {
-        }
+        private FMS() { }
 
         private bool DoesFileExist(string filePath)
         {
@@ -332,7 +334,5 @@ namespace trabalho_oop
                 throw new InvalidOperationException($"Failed to save entity {entity.GetEntityType()}", ex);
             }
         }
-
-        ~FMS() { }
     }
 }

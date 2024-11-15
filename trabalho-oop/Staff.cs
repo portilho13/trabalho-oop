@@ -135,10 +135,5 @@ namespace trabalho_oop
                 throw new InvalidOperationException("Failed to create new staff member", ex);
             }
         }
-
-        ~Staff()
-        {
-            // Destructor doesn't need exception handling as it shouldn't throw exceptions
-        }
     }
 }

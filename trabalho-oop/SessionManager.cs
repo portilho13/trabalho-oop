@@ -7,7 +7,7 @@ namespace trabalho_oop
 {
     public class SessionManager
     {
-        public Session activeSession;
+        public Session ActiveSession;
         private readonly List<Staff> _staff;
         private readonly List<Passenger> _passengers;
         private FMS _fms;
@@ -17,6 +17,7 @@ namespace trabalho_oop
             private get => _fms;
             set => _fms = value ?? throw new ArgumentNullException(nameof(value), "FMS cannot be null");
         }
+        
         
 
         public SessionManager()
@@ -52,7 +53,7 @@ namespace trabalho_oop
                 
                 if (staff != null)
                 {
-                    activeSession = new Session(staff);
+                    ActiveSession = new Session(staff);
                     Logger.Instance().Info($"Staff login successful: {staff.Name} ({staff.Email})");
                     return true;
                 }
@@ -134,7 +135,7 @@ namespace trabalho_oop
                 
                 if (passenger != null)
                 {
-                    activeSession = new Session(passenger);
+                    ActiveSession = new Session(passenger);
                     Logger.Instance().Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
                     return true;
                 }
@@ -153,11 +154,11 @@ namespace trabalho_oop
         {
             try
             {
-                if (activeSession?.LoggedInPerson != null)
+                if (ActiveSession?.LoggedInPerson != null)
                 {
-                    Logger.Instance().Info($"User {activeSession.LoggedInPerson.Name} logged out");
+                    Logger.Instance().Info($"User {ActiveSession.LoggedInPerson.Name} logged out");
                 }
-                activeSession = null;
+                ActiveSession = null;
             }
             catch (Exception ex)
             {
@@ -170,7 +171,7 @@ namespace trabalho_oop
         {
             try
             {
-                return activeSession != null;
+                return ActiveSession != null;
             }
             catch (Exception ex)
             {
@@ -187,11 +188,21 @@ namespace trabalho_oop
             }
         }
 
+        public EntityType GetEntityType()
+        {
+            Person person = GetLoggedInPerson();
+            if (person is Passenger passenger)
+            {
+                return EntityType.Passenger;
+            }
+            return EntityType.Staff;
+        }
+
         public Person GetLoggedInPerson()
         {
             try
             {
-                return activeSession?.LoggedInPerson;
+                return ActiveSession?.LoggedInPerson;
             }
             catch (Exception ex)
             {

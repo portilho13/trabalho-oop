@@ -6,11 +6,9 @@ public class Fleet
 {
     private Dictionary<string, Airplane> fleet = new Dictionary<string, Airplane>();
     
-    public FMS Fms { get; set; }
 
-    public Fleet(FMS fms)
+    public Fleet()
     {
-        Fms = fms;
     }
 
     private bool DoesPlaneExist(string Resistration) => fleet.ContainsKey(Resistration);
@@ -27,10 +25,10 @@ public class Fleet
 
     public void LoadFleet()
     {
-        string[] files = Fms.ReadAirplaneFromFolder();
+        string[] files = FMS.Instance.ReadAirplaneFromFolder();
         foreach (string file in files)
         {
-            string json = Fms.ReadFromJson(file);
+            string json = FMS.Instance.ReadFromJson(file);
             Airplane airplane = JsonSerializer.Deserialize<Airplane>(json);
             this.AddAirplane(airplane);
         }
@@ -48,7 +46,7 @@ public class Fleet
     public void RemoveAirplane(string registration)
     {
         Airplane airplane = GetAirplane(registration);
-        Fms.DeleteAirplane(airplane);
+        FMS.Instance.DeleteAirplane(airplane);
         fleet.Remove(registration);
     }
     

@@ -6,7 +6,6 @@ namespace trabalho_oop
 {
     public class Flight : IStorable
     {
-        private FMS Fms;
         public string Number { get; set; }
         public string Origin { get; private set; }
         public string Destination { get; private set; }
@@ -52,22 +51,20 @@ namespace trabalho_oop
             PassengersReservations.Add(reservation.ReservationCode, reservation);
         }
 
-        public Flight(string number, string origin, string destination, Airplane airplane, FMS fms)
+        public Flight(string number, string origin, string destination, Airplane airplane)
         {
             Logger.Instance().Info($"Creating flight {number} from {origin} to {destination} using airplane {airplane.Registration}");
             
-            Fms = fms;
             airplane.ChangeOccupiedStatus(); // Change status to occupied
             Number = number;
             Origin = origin;
             Destination = destination;
             Airplane = airplane;
-            PassengerList p = new PassengerList(Fms);
+            PassengerList p = new PassengerList();
             PassengersReservations = p.GeneratePassengerList(GenerateRandomNumberOfPassengers());
 
             Logger.Instance().Info($"Flight {number} created successfully with {PassengersReservations.Count} passengers.");
         }
-
-        ~Flight() { }
+        
     }
 }

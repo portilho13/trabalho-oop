@@ -66,10 +66,5 @@ namespace trabalho_oop
                 Logger.Instance().Warn($"Reservation {reservation.ReservationCode} already exists for passenger {Id}. Skipping addition.");
             }
         }
-
-        ~Passenger()
-        {
-            Logger.Instance().Info($"Passenger {Id} instance is being destroyed.");
-        }
     }
 }

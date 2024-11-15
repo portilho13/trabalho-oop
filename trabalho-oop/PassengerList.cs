@@ -2,21 +2,17 @@ namespace trabalho_oop;
 
 public class PassengerList
 {
-    private List<string> passengerNames = new List<string>();
-    private List<string> passengerSurnames = new List<string>();
-    private FMS Fms;
+    private List<string> _passengerNames = FMS.Instance.GetPassengerNames();
+    private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
 
-    public PassengerList(FMS fms)
+    public PassengerList()
     {
-        Fms = fms;
-        passengerNames = Fms.GetPassengerNames();
-        passengerSurnames = Fms.GetPassengerSurnames();
     }
 
     private string GenerateRandomPassenger()
     {
         // Check that both lists contain elements before proceeding
-        if (passengerNames.Count == 0 || passengerSurnames.Count == 0)
+        if (_passengerNames.Count == 0 || _passengerSurnames.Count == 0)
         {
             Console.WriteLine("Passenger names or surnames list is empty.");
             return "";
@@ -26,12 +22,12 @@ public class PassengerList
         Random random = new Random();
 
         // Get random indices
-        int randomNameIndex = random.Next(0, passengerNames.Count);
-        int randomSurnameIndex = random.Next(0, passengerSurnames.Count);
+        int randomNameIndex = random.Next(0, _passengerNames.Count);
+        int randomSurnameIndex = random.Next(0, _passengerSurnames.Count);
 
         // Retrieve the random name and surname
-        string passengerName = passengerNames[randomNameIndex];
-        string passengerSurname = passengerSurnames[randomSurnameIndex];
+        string passengerName = _passengerNames[randomNameIndex];
+        string passengerSurname = _passengerSurnames[randomSurnameIndex];
 
         // Concatenate with a space in between
         string passenger = passengerName + " " + passengerSurname;
