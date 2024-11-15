@@ -5,16 +5,17 @@ namespace trabalho_oop
 {
     public class Reservation
     {
-        private static Logger logger = Logger.Instance("./fms/logs/app.log");
+        private readonly Logger _logger;
 
         [NonSerialized] public string ReservationCode;
         public Person Passenger { get; set; }
 
-        public Reservation(Passenger passenger)
+        public Reservation(Passenger passenger, Logger logger)
         {
             ValidateConstructorParameters(passenger);
             Passenger = passenger;
             ReservationCode = NumberGenerator.GenerateRandomNumber();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
         
         private void ValidateConstructorParameters(Passenger passenger)
@@ -31,11 +32,6 @@ namespace trabalho_oop
             {
                 throw new InvalidOperationException("Unexpected error during parameter validation", ex);
             }
-        }
-
-        public Reservation()
-        {
-            ReservationCode = NumberGenerator.GenerateRandomNumber();
         }
         
         public string GetIdentifier() => ReservationCode;

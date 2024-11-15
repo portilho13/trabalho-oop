@@ -6,17 +6,16 @@ namespace trabalho_oop
     {
         static void Main(string[] args)
         {
-            // Create an instance of Logger
-            Logger logger = Logger.Instance("./fms/logs/app.log");
 
+            Logger logger = new Logger("./fms/logs/app.log");
             try
             {
                 // Start the FMS
-
+                
                 FMS.Instance.Start(); // Start new file management system
                 
                 // Create SessionManager
-                SessionManager sessionManager = new SessionManager();
+                SessionManager sessionManager = new SessionManager(logger);
 
                 // Load the session
                 sessionManager.Load();
@@ -26,28 +25,33 @@ namespace trabalho_oop
                 sessionManager.DisplayPassengers();
 
                 // Register a new staff member
-                //sessionManager.RegisterPassanger("Junior", "junior.portilho2005@gmail.com", "junior");
-                sessionManager.LoginPassenger("junior.portilho2005@gmail.com", "junior");
+                //sessionManager.RegisterPassanger("Junior", "junior@gmail.com", "junior");
+                sessionManager.LoginPassenger("junior@gmail.com", "junior");
                 sessionManager.IsAuthenticated();
 
-                Passenger p = new Passenger();
+                Passenger p = new Passenger(logger);
 
                 if (sessionManager.GetEntityType() == EntityType.Passenger)
                 {
                     p = sessionManager.ActiveSession?.LoggedInPerson as Passenger;
                 }
                 
-                Fleet fleet = new Fleet();
+                Flights flights = new Flights(logger);
+                flights.LoadFlights();
+                flights.ShowFlightsList();
+                
+                Fleet fleet = new Fleet(logger);
                 fleet.LoadFleet();
                 fleet.ShowAircraftList();
                 // Create a new Airplane
-                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738");
+                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738", logger);
                 FMS.Instance.Save(ryanair); // Save the Airplane instance
 
                 //Airplane r = fleet.GetAirplane("EI-GSG");
                 
                 // Create a new Flight
-                Flight flight = new Flight("RYR4704", "Porto", "Milan", ryanair);
+                DateTime flightDateTime = new DateTime(2024, 12, 25, 15, 30, 0);
+                Flight flight = new Flight("RYR4704", "Porto", "Milan", ryanair, logger, flightDateTime);
                 flight.AddReservation(p);
                 FMS.Instance.Save(flight); // Save the Flight instance
                 
@@ -57,6 +61,7 @@ namespace trabalho_oop
             catch (Exception ex)
             {
                 // Log any exceptions
+                Console.WriteLine(ex);
                 logger.Error($"An error occurred: {ex.Message}");
             }
         }

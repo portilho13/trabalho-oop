@@ -5,6 +5,10 @@ public class PassengerList
     private List<string> _passengerNames = FMS.Instance.GetPassengerNames();
     private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
 
+    private readonly Logger _logger;
+    
+    public PassengerList(Logger logger) => _logger = logger;
+
     private string GenerateRandomPassenger()
     {
         // Check that both lists contain elements before proceeding
@@ -39,12 +43,10 @@ public class PassengerList
         Dictionary<string, Reservation> passengersReservatonList = new Dictionary<string, Reservation>();
         for (int i = 0; i < passengerCount; i++)
         {
-            Reservation r = new Reservation();
-            Passenger p = new Passenger();
+            Passenger p = new Passenger(_logger);
             string passengerName = GenerateRandomPassenger();
             p.Name = passengerName;
-            
-            r.Passenger = p;
+            Reservation r = new Reservation(p, _logger);
             do
             {
                 r.ReservationCode = NumberGenerator.GenerateRandomNumber();

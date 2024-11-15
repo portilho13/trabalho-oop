@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace trabalho_oop
 {
@@ -172,6 +169,22 @@ namespace trabalho_oop
                 throw new IOException($"Failed to delete airplane file for registration: {airplane.Registration}", ex);
             }
         }
+        
+        public void DeleteFlight(Flight flight)
+        {
+            try
+            {
+                string flightPath = Path.Combine(FlightFolderPath, flight.Number + ".json");
+                if (File.Exists(flightPath))
+                {
+                    File.Delete(flightPath);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to delete flight file for number: {flight.Number}", ex);
+            }
+        }
 
         public string[] ReadAirplaneFromFolder()
         {
@@ -182,6 +195,18 @@ namespace trabalho_oop
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 throw new IOException("Failed to read airplane files from folder", ex);
+            }
+        }
+        
+        public string[] ReadFlightsFromFolder()
+        {
+            try
+            {
+                return Directory.GetFiles(FlightFolderPath);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException("Failed to read flights files from folder", ex);
             }
         }
 
@@ -196,115 +221,29 @@ namespace trabalho_oop
                 throw new ArgumentException($"Invalid staff code: {staffCode}", ex);
             }
         }
-
-        public List<Staff> ReadStaffFromFolder()
+        
+        public string[] ReadStaffFromFolder()
         {
-            List<Staff> staffList = new List<Staff>();
-            
             try
             {
-                string[] files = Directory.GetFiles(StaffFolderPath, "*.json");
-
-                foreach (string file in files)
-                {
-                    if (!DoesStaffExist(file))
-                    {
-                        try
-                        {
-                            string json = File.ReadAllText(file);
-
-                            if (string.IsNullOrWhiteSpace(json))
-                            {
-                                Console.WriteLine($"Skipped empty file: {file}");
-                                continue;
-                            }
-
-                            Staff staff = JsonSerializer.Deserialize<Staff>(json, new JsonSerializerOptions
-                            {
-                                PropertyNameCaseInsensitive = true
-                            });
-                        
-                            if (staff != null)
-                            {
-                                staffList.Add(staff);
-                            }
-                        }
-                        catch (JsonException ex)
-                        {
-                            Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
-                            // Continue processing other files
-                            continue;
-                        }
-                        catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                        {
-                            Console.WriteLine($"Error reading file {file}: {ex.Message}");
-                            // Continue processing other files
-                            continue;
-                        }
-                    }
-                }
+                return Directory.GetFiles(StaffFolderPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
-                throw new IOException("Failed to read staff folder", ex);
+                throw new IOException("Failed to read staff files from folder", ex);
             }
-
-            return staffList;
         }
         
-        public List<Passenger> ReadPassengersFromFolder()
+        public string[] ReadPassengersFromFolder()
         {
-            List<Passenger> passengerList = new List<Passenger>();
-            
             try
             {
-                string[] files = Directory.GetFiles(PassengerFolderPath, "*.json");
-
-                foreach (string file in files)
-                {
-                    if (!DoesStaffExist(file))
-                    {
-                        try
-                        {
-                            string json = File.ReadAllText(file);
-
-                            if (string.IsNullOrWhiteSpace(json))
-                            {
-                                Console.WriteLine($"Skipped empty file: {file}");
-                                continue;
-                            }
-
-                            Passenger passenger = JsonSerializer.Deserialize<Passenger>(json, new JsonSerializerOptions
-                            {
-                                PropertyNameCaseInsensitive = true
-                            });
-                        
-                            if (passenger != null)
-                            {
-                                passengerList.Add(passenger);
-                            }
-                        }
-                        catch (JsonException ex)
-                        {
-                            Console.WriteLine($"Failed to deserialize JSON in file {file}: {ex.Message}");
-                            // Continue processing other files
-                            continue;
-                        }
-                        catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                        {
-                            Console.WriteLine($"Error reading file {file}: {ex.Message}");
-                            // Continue processing other files
-                            continue;
-                        }
-                    }
-                }
+                return Directory.GetFiles(PassengerFolderPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
-                throw new IOException("Failed to read staff folder", ex);
+                throw new IOException("Failed to read passenger files from folder", ex);
             }
-
-            return passengerList;
         }
 
         public List<string> GetPassengerNames()

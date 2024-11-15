@@ -8,9 +8,8 @@ namespace trabalho_oop
 {
     public class Staff : Person, IStorable
     {
-        private static Logger logger;
+        private static Logger _logger;
         
-
         public string staffCode { get; set; }
         public string password { get; set; }
 
@@ -23,12 +22,12 @@ namespace trabalho_oop
             }
             catch (JsonException ex)
             {
-                logger.Error($"Failed to serialize Staff object: {ex.Message}");
+                _logger.Error($"Failed to serialize Staff object: {ex.Message}");
                 throw new InvalidOperationException($"Failed to convert Staff {Name} to JSON", ex);
             }
             catch (Exception ex)
             {
-                logger.Error($"Unexpected error during JSON serialization: {ex.Message}");
+                _logger.Error($"Unexpected error during JSON serialization: {ex.Message}");
                 throw;
             }
         }
@@ -61,7 +60,7 @@ namespace trabalho_oop
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to generate staff code: {ex.Message}");
+                _logger.Error($"Failed to generate staff code: {ex.Message}");
                 throw new InvalidOperationException("Failed to generate staff code", ex);
             }
         }
@@ -92,12 +91,12 @@ namespace trabalho_oop
             }
             catch (CryptographicException ex)
             {
-                logger.Error($"Cryptographic error while hashing password: {ex.Message}");
+                _logger.Error($"Cryptographic error while hashing password: {ex.Message}");
                 throw new InvalidOperationException("Failed to hash password", ex);
             }
             catch (Exception ex)
             {
-                logger.Error($"Unexpected error while hashing password: {ex.Message}");
+                _logger.Error($"Unexpected error while hashing password: {ex.Message}");
                 throw;
             }
         }
@@ -108,22 +107,23 @@ namespace trabalho_oop
             try
             {
                 this.password = HashPassword(password);
-                logger.Info($"Password set for staff member: {staffCode}.");
+                _logger.Info($"Password set for staff member: {staffCode}.");
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to set password for staff member {staffCode}: {ex.Message}");
+                _logger.Error($"Failed to set password for staff member {staffCode}: {ex.Message}");
                 throw new InvalidOperationException($"Failed to set password for staff member {staffCode}", ex);
             }
         }
 
         // Constructor with exception handling
-        public Staff()
+        public Staff(Logger logger)
         {
             try
             {
+                _logger = logger;
                 this.staffCode = GenerateStaffCode();
-                logger.Info($"New staff created with staff code: {staffCode}.");
+                _logger.Info($"New staff created with staff code: {staffCode}.");
             }
             catch (Exception ex)
             {

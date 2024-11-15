@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace trabalho_oop
 {
@@ -10,21 +11,22 @@ namespace trabalho_oop
         public Session ActiveSession;
         private readonly List<Staff> _staff;
         private readonly List<Passenger> _passengers;
-        
+        private readonly Logger _logger;
         
         
 
-        public SessionManager()
+        public SessionManager(Logger logger)
         {
             try
             {
                 _staff = new List<Staff>();
                 _passengers = new List<Passenger>();
-                Logger.Instance().Info("SessionManager initialized successfully");
+                _logger = logger;
+                _logger.Info("SessionManager initialized successfully");
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Failed to initialize SessionManager: {ex.Message}");
+                _logger.Error($"Failed to initialize SessionManager: {ex.Message}");
                 throw new InvalidOperationException("Failed to initialize SessionManager", ex);
             }
         }
@@ -47,17 +49,17 @@ namespace trabalho_oop
                 
                 if (staff != null)
                 {
-                    ActiveSession = new Session(staff);
-                    Logger.Instance().Info($"Staff login successful: {staff.Name} ({staff.Email})");
+                    ActiveSession = new Session(staff, _logger);
+                    _logger.Info($"Staff login successful: {staff.Name} ({staff.Email})");
                     return true;
                 }
                 
-                Logger.Instance().Warn($"Staff login failed: Invalid credentials for {staffCode}");
+                _logger.Warn($"Staff login failed: Invalid credentials for {staffCode}");
                 return false;
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                Logger.Instance().Error($"Error during staff login: {ex.Message}");
+                _logger.Error($"Error during staff login: {ex.Message}");
                 throw new InvalidOperationException("Failed to process staff login", ex);
             }
         }
@@ -85,7 +87,7 @@ namespace trabalho_oop
             }
             catch (Exception ex) when (ex is not ArgumentException)
             {
-                Logger.Instance().Error("Error creating password hash");
+                _logger.Error("Error creating password hash");
                 throw new InvalidOperationException("Failed to create password hash", ex);
             }
         }
@@ -96,22 +98,31 @@ namespace trabalho_oop
             {
 
                 _staff.Clear();
-                var loadedStaff = FMS.Instance.ReadStaffFromFolder();
-                
-                if (loadedStaff != null)
-                    _staff.AddRange(loadedStaff);
-                
+                string[] files = FMS.Instance.ReadStaffFromFolder();
+                foreach (string file in files)
+                {
+                    string json = FMS.Instance.ReadFromJson(file);
+                    Staff staff = JsonSerializer.Deserialize<Staff>(json);
+                    if (staff != null)
+                        this._staff.Add(staff);
+                }
+
+                _logger.Info("Staff data loaded from FMS");
                 _passengers.Clear();
                 
-                var loadedPassenger = FMS.Instance.ReadPassengersFromFolder();
-                if(loadedPassenger != null)
-                    _passengers.AddRange(loadedPassenger);
-                
-                Logger.Instance().Info("Staff data loaded from FMS");
+                files = FMS.Instance.ReadPassengersFromFolder();
+                foreach (string file in files)
+                {
+                    string json = FMS.Instance.ReadFromJson(file);
+                    Passenger passenger = JsonSerializer.Deserialize<Passenger>(json);
+                    if (passenger != null)
+                        this._passengers.Add(passenger);
+                }
+                _logger.Info("Passenger data loaded from FMS");
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Failed to load staff data: {ex.Message}");
+                _logger.Error($"Failed to load staff data: {ex.Message}");
                 throw new InvalidOperationException("Failed to load staff data from FMS", ex);
             }
         }
@@ -133,17 +144,17 @@ namespace trabalho_oop
                 
                 if (passenger != null)
                 {
-                    ActiveSession = new Session(passenger);
-                    Logger.Instance().Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
+                    ActiveSession = new Session(passenger, _logger);
+                    _logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
                     return true;
                 }
                 
-                Logger.Instance().Warn($"Passenger login failed: Invalid credentials for {email}");
+                _logger.Warn($"Passenger login failed: Invalid credentials for {email}");
                 return false;
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                Logger.Instance().Error($"Error during passenger login: {ex.Message}");
+                _logger.Error($"Error during passenger login: {ex.Message}");
                 throw new InvalidOperationException("Failed to process passenger login", ex);
             }
         }
@@ -154,13 +165,13 @@ namespace trabalho_oop
             {
                 if (ActiveSession?.LoggedInPerson != null)
                 {
-                    Logger.Instance().Info($"User {ActiveSession.LoggedInPerson.Name} logged out");
+                    _logger.Info($"User {ActiveSession.LoggedInPerson.Name} logged out");
                 }
                 ActiveSession = null;
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Error during logout: {ex.Message}");
+                _logger.Error($"Error during logout: {ex.Message}");
                 throw new InvalidOperationException("Failed to process logout", ex);
             }
         }
@@ -173,7 +184,7 @@ namespace trabalho_oop
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Error checking authentication status: {ex.Message}");
+                _logger.Error($"Error checking authentication status: {ex.Message}");
                 throw new InvalidOperationException("Failed to check authentication status", ex);
             }
         }
@@ -212,7 +223,7 @@ namespace trabalho_oop
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Error retrieving logged in person: {ex.Message}");
+                _logger.Error($"Error retrieving logged in person: {ex.Message}");
                 throw new InvalidOperationException("Failed to retrieve logged in person", ex);
             }
         }
@@ -236,11 +247,11 @@ namespace trabalho_oop
                 Staff existingStaff = _staff.Find(s => s.Email == email);
                 if (existingStaff != null)
                 {
-                    Logger.Instance().Warn($"Staff registration failed: Email {email} already exists");
+                    _logger.Warn($"Staff registration failed: Email {email} already exists");
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Staff newStaff = new Staff
+                Staff newStaff = new Staff(_logger)
                 {
                     Name = name,
                     Email = email
@@ -248,11 +259,11 @@ namespace trabalho_oop
                 newStaff.SetPassword(password);
 
                 _staff.Add(newStaff);
-                Logger.Instance().Info($"New staff registered: {name} ({email})");
+                _logger.Info($"New staff registered: {name} ({email})");
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                Logger.Instance().Error($"Error during staff registration: {ex.Message}");
+                _logger.Error($"Error during staff registration: {ex.Message}");
                 throw new InvalidOperationException("Failed to register staff", ex);
             }
         }
@@ -276,11 +287,11 @@ namespace trabalho_oop
                 Passenger p = _passengers.Find(s => s.Email == email);
                 if (p != null)
                 {
-                    Logger.Instance().Warn($"Staff registration failed: Email {email} already exists");
+                    _logger.Warn($"Staff registration failed: Email {email} already exists");
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Passenger passenger = new Passenger()
+                Passenger passenger = new Passenger(_logger)
                 {
                     Name = name,
                     Email = email
@@ -288,11 +299,11 @@ namespace trabalho_oop
                 passenger.password = password;
 
                 _passengers.Add(passenger);
-                Logger.Instance().Info($"New passenger registered: {name} ({email})");
+                _logger.Info($"New passenger registered: {name} ({email})");
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                Logger.Instance().Error($"Error during passenger registration: {ex.Message}");
+                _logger.Error($"Error during passenger registration: {ex.Message}");
                 throw new InvalidOperationException("Failed to register passenger", ex);
             }
         }
@@ -317,11 +328,11 @@ namespace trabalho_oop
                         FMS.Instance.Save(passenger);
                 }
 
-                Logger.Instance().Info("Staff and Passenger data saved to FMS");
+                _logger.Info("Staff and Passenger data saved to FMS");
             }
             catch (Exception ex)
             {
-                Logger.Instance().Error($"Failed to save data: {ex.Message}");
+                _logger.Error($"Failed to save data: {ex.Message}");
                 throw new InvalidOperationException("Failed to save data to FMS", ex);
             }
         }

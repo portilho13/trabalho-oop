@@ -5,6 +5,7 @@ using System;
 public class Session
 {
     private Person _loggedInPerson;
+    private readonly Logger _logger;
     public Person LoggedInPerson
     {
         get
@@ -23,7 +24,7 @@ public class Session
 
     public DateTime CreatedAt { get; private set; }
 
-    public Session(Person person)
+    public Session(Person person, Logger logger)
     {
         try
         {
@@ -32,14 +33,16 @@ public class Session
                 throw new ArgumentNullException(nameof(person), "Cannot create session with null person");
             }
 
+            _logger = logger;
+
             LoggedInPerson = person;
             CreatedAt = DateTime.Now;
 
-            Logger.Instance().Info($"Session created for person: {person.GetType().Name}");
+            _logger.Info($"Session created for person: {person.GetType().Name}");
         }
         catch (Exception ex) when (ex is not ArgumentNullException)
         {
-            Logger.Instance().Error($"Failed to create session: {ex.Message}");
+            _logger.Error($"Failed to create session: {ex.Message}");
             throw new InvalidOperationException("Failed to initialize session", ex);
         }
     }
@@ -50,7 +53,7 @@ public class Session
         {
             if (_loggedInPerson != null)
             {
-                Logger.Instance().Info($"Session for person {_loggedInPerson.GetType().Name} is being destroyed.");
+                _logger.Info($"Session for person {_loggedInPerson.GetType().Name} is being destroyed.");
             }
         }
         catch (Exception ex)

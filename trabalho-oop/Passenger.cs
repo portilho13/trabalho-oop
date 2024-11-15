@@ -10,8 +10,17 @@ namespace trabalho_oop
         public string password;
         public string Id { get; set; }
         
+        [NonSerialized]
+        private readonly Logger _logger;
+        
         public Dictionary<string, Reservation> Reservations { get; private set; } = new Dictionary<string, Reservation>();
 
+        public Passenger(Logger logger)
+        {
+            Id = NumberGenerator.GenerateRandomNumber();
+            _logger = logger;
+        }
+        
         // Parameterless constructor (needed for deserialization)
         public Passenger()
         {
@@ -46,11 +55,11 @@ namespace trabalho_oop
             if (!DoesReservationExists(reservation.ReservationCode))
             {
                 Reservations.Add(reservation.ReservationCode, reservation);
-                Logger.Instance().Info($"Added reservation {reservation.ReservationCode} for passenger {Id}.");
+                _logger.Info($"Added reservation {reservation.ReservationCode} for passenger {Id}.");
             }
             else
             {
-                Logger.Instance().Warn($"Reservation {reservation.ReservationCode} already exists for passenger {Id}. Skipping addition.");
+                _logger.Warn($"Reservation {reservation.ReservationCode} already exists for passenger {Id}. Skipping addition.");
             }
         }
     }
