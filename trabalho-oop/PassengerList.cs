@@ -5,10 +5,6 @@ public class PassengerList
     private List<string> _passengerNames = FMS.Instance.GetPassengerNames();
     private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
 
-    public PassengerList()
-    {
-    }
-
     private string GenerateRandomPassenger()
     {
         // Check that both lists contain elements before proceeding
@@ -51,7 +47,7 @@ public class PassengerList
             r.Passenger = p;
             do
             {
-                r.GenerateReservationCode();
+                r.ReservationCode = NumberGenerator.GenerateRandomNumber();
             } while(passengersReservatonList.ContainsKey(r.ReservationCode));
             
             passengersReservatonList.Add(r.ReservationCode, r);

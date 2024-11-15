@@ -10,10 +10,6 @@ namespace trabalho_oop
     {
         private static Logger logger;
         
-        // Initialize logger with exception handling
-        static Staff()
-        {
-        }
 
         public string staffCode { get; set; }
         public string password { get; set; }

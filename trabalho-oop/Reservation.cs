@@ -12,28 +12,33 @@ namespace trabalho_oop
 
         public Reservation(Passenger passenger)
         {
+            ValidateConstructorParameters(passenger);
             Passenger = passenger;
-            GenerateReservationCode();
+            ReservationCode = NumberGenerator.GenerateRandomNumber();
         }
         
-        public Reservation() {}
+        private void ValidateConstructorParameters(Passenger passenger)
+        {
+            try
+            {
+                if (passenger == null)
+                {
+                    throw new ArgumentNullException(nameof(passenger), "Passenger cannot be null.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unexpected error during parameter validation", ex);
+            }
+        }
+
+        public Reservation()
+        {
+            ReservationCode = NumberGenerator.GenerateRandomNumber();
+        }
         
         public string GetIdentifier() => ReservationCode;
         
-        // Generate a unique reservation code
-        public void GenerateReservationCode()
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var reservationCode = new char[6];
-
-            for (int i = 0; i < reservationCode.Length; i++)
-            {
-                reservationCode[i] = chars[random.Next(chars.Length)];
-            }
-
-            this.ReservationCode = new string(reservationCode);
-            
-        }
     }
 }

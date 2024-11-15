@@ -4,23 +4,18 @@ namespace trabalho_oop;
 
 public class Fleet
 {
-    private Dictionary<string, Airplane> fleet = new Dictionary<string, Airplane>();
-    
+    private Dictionary<string, Airplane> _fleet = new Dictionary<string, Airplane>();
 
-    public Fleet()
-    {
-    }
-
-    private bool DoesPlaneExist(string Resistration) => fleet.ContainsKey(Resistration);
+    private bool DoesPlaneExist(string Resistration) => _fleet.ContainsKey(Resistration);
 
     public Airplane GetAirplane(string Resistration)
     {
-        return fleet[Resistration];
+        return _fleet[Resistration];
     }
 
     public void AddAirplane(Airplane airplane)
     {
-        fleet.Add(airplane.Registration, airplane);
+        _fleet.Add(airplane.Registration, airplane);
     }
 
     public void LoadFleet()
@@ -36,7 +31,7 @@ public class Fleet
 
     public void ShowAircraftList()
     {
-        foreach (Airplane airplane in fleet.Values)
+        foreach (Airplane airplane in _fleet.Values)
         {
             Console.WriteLine(airplane.Registration);
         }
@@ -47,7 +42,7 @@ public class Fleet
     {
         Airplane airplane = GetAirplane(registration);
         FMS.Instance.DeleteAirplane(airplane);
-        fleet.Remove(registration);
+        _fleet.Remove(registration);
     }
     
 }

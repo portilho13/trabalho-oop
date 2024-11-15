@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace trabalho_oop
@@ -14,7 +15,7 @@ namespace trabalho_oop
         // Parameterless constructor (needed for deserialization)
         public Passenger()
         {
-            Id = GenerateRandomId();
+            Id = NumberGenerator.GenerateRandomNumber();
         }
 
         public string GetIdentifier() => Id;
@@ -37,20 +38,6 @@ namespace trabalho_oop
             }
         }
         public EntityType GetEntityType() => EntityType.Passenger;
-
-        private static string GenerateRandomId()
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var randomId = new char[6];
-
-            for (int i = 0; i < randomId.Length; i++)
-            {
-                randomId[i] = chars[random.Next(chars.Length)];
-            }
-
-            return new string(randomId);
-        }
 
         private bool DoesReservationExists(string reservationCode) => Reservations.ContainsKey(reservationCode);
 

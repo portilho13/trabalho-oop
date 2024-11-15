@@ -53,6 +53,7 @@ namespace trabalho_oop
 
         public Flight(string number, string origin, string destination, Airplane airplane)
         {
+            ValidateConstructorParameters(number, origin, destination, airplane);
             Logger.Instance().Info($"Creating flight {number} from {origin} to {destination} using airplane {airplane.Registration}");
             
             airplane.ChangeOccupiedStatus(); // Change status to occupied
@@ -64,6 +65,33 @@ namespace trabalho_oop
             PassengersReservations = p.GeneratePassengerList(GenerateRandomNumberOfPassengers());
 
             Logger.Instance().Info($"Flight {number} created successfully with {PassengersReservations.Count} passengers.");
+        }
+        
+        private void ValidateConstructorParameters(string number, string origin, string destination, Airplane airplane)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(number))
+                    throw new ArgumentException("Flight Number cannot be empty or whitespace.", nameof(number));
+
+                if (string.IsNullOrWhiteSpace(origin))
+                    throw new ArgumentException("Origin cannot be empty or whitespace.", nameof(origin));
+                
+                if (string.IsNullOrWhiteSpace(destination))
+                    throw new ArgumentException("Destination cannot be empty or whitespace.", nameof(destination));
+                
+                if (airplane == null)
+                    throw new ArgumentNullException(nameof(airplane), "Airplane cannot be null.");
+
+            }
+            catch (Exception ex) when (ex is ArgumentException || ex is ArgumentOutOfRangeException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unexpected error during parameter validation", ex);
+            }
         }
         
     }

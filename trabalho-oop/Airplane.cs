@@ -18,7 +18,7 @@ namespace trabalho_oop
         {
             try
             {
-                ValidateConstructorParameters(company, registration, capacity);
+                ValidateConstructorParameters(company, registration, capacity, model);
 
                 Company = company;
                 Registration = registration;
@@ -38,7 +38,7 @@ namespace trabalho_oop
             }
         }
 
-        private void ValidateConstructorParameters(string company, string registration, int capacity)
+        private void ValidateConstructorParameters(string company, string registration, int capacity, string model)
         {
             try
             {
@@ -48,12 +48,14 @@ namespace trabalho_oop
                 if (string.IsNullOrWhiteSpace(registration))
                     throw new ArgumentException("Registration cannot be empty or whitespace.", nameof(registration));
 
-                if (registration.Length < 2 || registration.Length > 10)
+                if (registration.Length < 5 || registration.Length > 10)
                     throw new ArgumentException("Registration must be between 2 and 10 characters.", nameof(registration));
 
                 if (capacity <= 0)
                     throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be a positive number.");
-                
+                if (string.IsNullOrWhiteSpace(model))
+                    throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
+
             }
             catch (Exception ex) when (ex is ArgumentException || ex is ArgumentOutOfRangeException)
             {
