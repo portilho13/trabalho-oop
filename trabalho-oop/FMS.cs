@@ -34,8 +34,8 @@ namespace trabalho_oop
         public static readonly string PassengerFolderPath = Path.Combine(MainFolderPath, "passenger");
 
         // File names for storing names and surnames
-        private readonly string NamesFile = "nomes.txt";
-        private readonly string SurnamesFile = "apelidos.txt";
+        private readonly string NamesFile = "../../../nomes.txt";
+        private readonly string SurnamesFile = "../../../apelidos.txt";
 
         // List of folders to be created within the FMS directory
         private List<string> Folders = new List<string>
