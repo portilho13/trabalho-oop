@@ -7,7 +7,6 @@
 //    <version>0.1</version>
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
-
 namespace trabalho_oop
 {
     /// <summary>
