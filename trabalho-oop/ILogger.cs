@@ -1,6 +1,6 @@
 namespace trabalho_oop;
 
-public class Logger
+public interface ILogger
 {
     
 }
