@@ -100,5 +100,16 @@ namespace trabalho_oop.Tests
             Assert.Throws<KeyNotFoundException>(() => 
                 _fleet.RemoveAirplane("NON-EXISTING"));
         }
+        
+        [Test]
+        public void Constructor_NullLogger_ThrowsArgumentNullException()
+        {
+            // Arrange & Act & Assert
+            var ex = Assert.Throws<ArgumentNullException>(() =>
+                new Fleet(null));
+
+            // Assert that the exception's message contains 'logger'
+            Assert.That(ex.Message, Does.Contain("logger"));
+        }
     }
 }

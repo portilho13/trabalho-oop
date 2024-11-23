@@ -105,7 +105,7 @@ namespace trabalho_oop.Tests
         {
             // Arrange & Act & Assert
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Airplane("Ryanair", "RY12345", 200, "Boeing 737", null));
+                new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737", null));
 
             // Assert that the exception's message contains 'logger'
             Assert.That(ex.Message, Does.Contain("logger"));
