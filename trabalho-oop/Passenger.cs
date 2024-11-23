@@ -27,7 +27,7 @@ namespace trabalho_oop
         
         // Logger instance to log actions performed by the passenger
         [NonSerialized] // Prevents the logger from being serialized
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
         
         // Collection of reservations made by the passenger
         public Dictionary<string, Reservation> Reservations { get; private set; } = new Dictionary<string, Reservation>();
@@ -37,7 +37,7 @@ namespace trabalho_oop
         /// Initializes the logger instance.
         /// </summary>
         /// <param name="logger">The logger instance used for logging passenger actions.</param>
-        public Passenger(Logger logger)
+        public Passenger(ILogger logger)
         {
             Id = NumberGenerator.GenerateRandomNumber();  // Generate a unique passenger ID
             _logger = logger;  // Initialize the logger

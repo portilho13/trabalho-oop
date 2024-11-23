@@ -22,11 +22,11 @@ namespace trabalho_oop
         private Dictionary<string, Airplane> _fleet = new Dictionary<string, Airplane>();
 
         // Logger instance to log actions performed on the fleet
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
-        public Fleet(Logger logger)
+        public Fleet(ILogger logger)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         }
 
         /// <summary>

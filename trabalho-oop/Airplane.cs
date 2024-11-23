@@ -19,7 +19,7 @@ namespace trabalho_oop
     public class Airplane : IStorable
     {
         // Private logger instance to log information and errors
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
         
         // Public properties with getters and setters to manage airplane details
         public string Company { get; set; }
@@ -40,8 +40,10 @@ namespace trabalho_oop
         /// <param name="capacity">Capacity of the airplane</param>
         /// <param name="model">Model of the airplane</param>
         /// <param name="logger">Logger instance to log information</param>
-        public Airplane(string company, string registration, int capacity, string model, Logger logger)
+        public Airplane(string company, string registration, int capacity, string model, ILogger logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+
             try
             {
                 // Validate the constructor parameters before initializing
@@ -54,8 +56,6 @@ namespace trabalho_oop
                 IsOccupied = false;  // Default value for IsOccupied
                 Model = model;
                 
-                // Assign the logger instance
-                _logger = logger;
 
                 // Log the successful creation of the airplane
                 _logger.Info($"Airplane {Registration} created successfully. Company: {Company}, Capacity: {Capacity}");

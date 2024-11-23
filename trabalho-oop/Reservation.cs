@@ -19,7 +19,7 @@ namespace trabalho_oop
     /// </summary>
     public class Reservation
     {
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
         // The reservation code (unique identifier), will be generated automatically
         [NonSerialized] public string ReservationCode;
@@ -33,7 +33,7 @@ namespace trabalho_oop
         /// </summary>
         /// <param name="passenger">The passenger associated with the reservation.</param>
         /// <param name="logger">Logger for logging activities related to this reservation.</param>
-        public Reservation(Passenger passenger, Logger logger)
+        public Reservation(Passenger passenger, ILogger logger)
         {
             // Validate the input parameters for the constructor
             ValidateConstructorParameters(passenger);

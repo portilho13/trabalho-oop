@@ -19,13 +19,13 @@ namespace trabalho_oop
         private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
 
         // Logger instance to log actions
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
         
         /// <summary>
         /// Constructor to initialize the PassengerList with a logger instance.
         /// </summary>
         /// <param name="logger">The logger instance used for logging actions in the passenger list.</param>
-        public PassengerList(Logger logger) => _logger = logger;
+        public PassengerList(ILogger logger) => _logger = logger;
 
         /// <summary>
         /// Generates a random passenger name by selecting a random name and surname from predefined lists.

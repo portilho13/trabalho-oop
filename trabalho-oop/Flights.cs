@@ -21,13 +21,13 @@ namespace trabalho_oop
         private Dictionary<string, Flight> _flights = new Dictionary<string, Flight>();
 
         // Logger instance to log actions performed on the flights
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Constructor for initializing the Flights collection with a logger.
         /// </summary>
         /// <param name="logger">Logger instance used to log actions.</param>
-        public Flights(Logger logger)
+        public Flights(ILogger logger)
         {
             _logger = logger;
         }

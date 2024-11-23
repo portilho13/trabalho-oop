@@ -20,7 +20,7 @@ namespace trabalho_oop
     /// </summary>
     public class Flight : IStorable
     {
-        private readonly Logger _logger;  // Logger instance for flight-related logs
+        private readonly ILogger _logger;  // Logger instance for flight-related logs
 
         public string Number { get; set; }  // The unique flight number (e.g., "AA123")
         public string Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
@@ -76,6 +76,32 @@ namespace trabalho_oop
             Random random = new Random();
             return random.Next(100, Airplane.Capacity); // Random value between 100 and Airplane's max capacity
         }
+        
+        /// <summary>
+        /// Checks if a reservation exists for a given reservation code.
+        /// Throws an exception if the reservation is not found.
+        /// </summary>
+        /// <param name="reservationCode">The reservation code to check.</param>
+        public void CheckReservationExists(string reservationCode)
+        {
+            if (!PassengersReservations.ContainsKey(reservationCode))
+            {
+                throw new KeyNotFoundException($"Reservation with code {reservationCode} does not exist.");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a reservation based on a reservation code.
+        /// Throws an exception if the reservation does not exist.
+        /// </summary>
+        /// <param name="reservationCode">The reservation code to retrieve.</param>
+        /// <returns>The reservation corresponding to the given reservation code.</returns>
+        public Reservation GetReservation(string reservationCode)
+        {
+            CheckReservationExists(reservationCode); // Ensure the reservation exists
+            return PassengersReservations[reservationCode];
+        }
+
 
         /// <summary>
         /// Adds a new reservation for a passenger, ensuring each reservation code is unique.
@@ -106,10 +132,11 @@ namespace trabalho_oop
         /// <param name="airplane">The airplane assigned to the flight.</param>
         /// <param name="logger">A logger instance for logging flight-related activities.</param>
         /// <param name="scheduledDateTime">The scheduled date and time for the flight.</param>
-        public Flight(string number, string origin, string destination, Airplane airplane, Logger logger, DateTime scheduledDateTime)
+        public Flight(string number, string origin, string destination, Airplane airplane, ILogger logger, DateTime scheduledDateTime)
         {
             // Ensure the logger is not null
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+
             // Validate the constructor parameters
             ValidateConstructorParameters(number, origin, destination, airplane);
 
