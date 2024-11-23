@@ -7,12 +7,10 @@ namespace trabalho_oop.Tests
     public class AirplaneTests
     {
         private TestLogger _logger;
-
-        // This method runs before each test
+        
         [SetUp]
         public void Setup()
         {
-            // Ensure logger is instantiated and ready for tests
             _logger = new TestLogger();
         }
 
@@ -21,7 +19,7 @@ namespace trabalho_oop.Tests
         {
             // Arrange
             var company = "Ryanair";
-            var registration = "RY12345";
+            var registration = "RYR2345";
             var capacity = 200;
             var model = "Boeing 737";
 
