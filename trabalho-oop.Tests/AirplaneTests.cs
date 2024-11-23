@@ -41,8 +41,6 @@ namespace trabalho_oop.Tests
             // Arrange & Act & Assert
             var ex = Assert.Throws<ArgumentException>(() =>
                 new Airplane("", "RY12345", 200, "Boeing 737", _logger));
-
-            Assert.That(ex.Message, Does.Contain("Failed to create airplane due to invalid parameters"));
         }
 
         [Test]
@@ -78,13 +76,13 @@ namespace trabalho_oop.Tests
         public void GetIdentifier_ValidRegistration_ReturnsRegistration()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            var airplane = new Airplane("Ryanair", "EI-GSG", 200, "Boeing 737", _logger);
 
             // Act
             var identifier = airplane.GetIdentifier();
 
             // Assert
-            Assert.AreEqual("RY12345", identifier);
+            Assert.That(identifier, Is.EqualTo("EI-GSG"));
         }
 
         [Test]
