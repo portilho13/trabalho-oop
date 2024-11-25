@@ -66,7 +66,7 @@ namespace trabalho_oop.Tests
 
             // Assert
             Assert.IsTrue(reservationExists, "The reservation was not added to the flight.");
-            Assert.AreEqual(firstReservation.Value, _flight.GetReservation(firstReservation.Key), 
+            Assert.That(firstReservation.Value, Is.EqualTo(_flight.GetReservation(firstReservation.Key)), 
                 "The retrieved reservation does not match the added reservation.");
         }
         
