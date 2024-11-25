@@ -239,6 +239,26 @@ namespace trabalho_oop
         }
         
         /// <summary>
+        /// Deletes an airplane file from the system based on the airplane's registration.
+        /// </summary>
+        /// <param name="airplane">The airplane object to delete.</param>
+        public void DeleteAirport(Airport airport)
+        {
+            try
+            {
+                string airportPath = Path.Combine(AirportFolderPath, airport.ICAO + ".json");
+                if (File.Exists(airportPath))
+                {
+                    File.Delete(airportPath);
+                }
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException($"Failed to delete airport file for ICAO: {airport.ICAO}", ex);
+            }
+        }
+        
+        /// <summary>
         /// Deletes a flight file from the system based on the flight number.
         /// </summary>
         /// <param name="flight">The flight object to delete.</param>
@@ -287,6 +307,22 @@ namespace trabalho_oop
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 throw new IOException("Failed to read flights files from folder", ex);
+            }
+        }
+        
+        /// <summary>
+        /// Reads all airports files from the airports folder.
+        /// </summary>
+        /// <returns>An array of file paths for all airports files in the folder.</returns>
+        public string[] ReadAirportsFromFolder()
+        {
+            try
+            {
+                return Directory.GetFiles(AirportFolderPath);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new IOException("Failed to read Airports files from folder", ex);
             }
         }
 

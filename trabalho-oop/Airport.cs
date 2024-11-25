@@ -19,6 +19,8 @@ public class Airport: IStorable
         AirportName = airportName;
         IATA = iata;
         ICAO = icao;
+        
+        _logger.Info($"Created Airport: {AirportName}");
     }
     
     private void ValidateConstructorParameters(string airportName, string iata, string icao)
