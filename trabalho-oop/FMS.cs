@@ -29,9 +29,10 @@ namespace trabalho_oop
         // Paths for the main folders related to flights, aircraft, staff, and passengers
         public static readonly string MainFolderPath = "./fms"; // Default path for FMS
         public static readonly string FlightFolderPath = Path.Combine(MainFolderPath, "flights");
-        public static readonly string AircraftFolderPath = Path.Combine(MainFolderPath, "aircraft");
+        public static readonly string AirplaneFolderPath = Path.Combine(MainFolderPath, "airplane");
         public static readonly string StaffFolderPath = Path.Combine(MainFolderPath, "staff");
         public static readonly string PassengerFolderPath = Path.Combine(MainFolderPath, "passenger");
+        public static readonly string AirportFolderPath = Path.Combine(MainFolderPath, "airports");
 
         // File names for storing names and surnames
         private readonly string NamesFile = "../../../nomes.txt";
@@ -41,9 +42,10 @@ namespace trabalho_oop
         private List<string> Folders = new List<string>
         {
             FlightFolderPath,
-            AircraftFolderPath,
+            AirplaneFolderPath,
             StaffFolderPath,
-            PassengerFolderPath
+            PassengerFolderPath,
+            AirportFolderPath,
         };
 
         // Private constructor for singleton pattern
@@ -224,7 +226,7 @@ namespace trabalho_oop
         {
             try
             {
-                string airplanePath = Path.Combine(AircraftFolderPath, airplane.Registration + ".json");
+                string airplanePath = Path.Combine(AirplaneFolderPath, airplane.Registration + ".json");
                 if (File.Exists(airplanePath))
                 {
                     File.Delete(airplanePath);
@@ -264,7 +266,7 @@ namespace trabalho_oop
         {
             try
             {
-                return Directory.GetFiles(AircraftFolderPath);
+                return Directory.GetFiles(AirplaneFolderPath);
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
@@ -395,13 +397,15 @@ namespace trabalho_oop
                 switch (entity)
                 {
                     case EntityType.Airplane:
-                        return AircraftFolderPath;
+                        return AirplaneFolderPath;
                     case EntityType.Passenger:
                         return PassengerFolderPath;
                     case EntityType.Flight:
                         return FlightFolderPath;
                     case EntityType.Staff:
                         return StaffFolderPath;
+                    case EntityType.Airport:
+                        return AirportFolderPath;
                     default:
                         throw new ArgumentException($"Invalid entity type: {entity}", nameof(entity));
                 }

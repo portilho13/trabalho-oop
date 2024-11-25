@@ -44,7 +44,7 @@ namespace trabalho_oop.Tests
             {
                 Assert.That(Directory.Exists(FMS.MainFolderPath), "Main folder should exist");
                 Assert.That(Directory.Exists(FMS.FlightFolderPath), "Flight folder should exist");
-                Assert.That(Directory.Exists(FMS.AircraftFolderPath), "Aircraft folder should exist");
+                Assert.That(Directory.Exists(FMS.AirplaneFolderPath), "Aircraft folder should exist");
                 Assert.That(Directory.Exists(FMS.StaffFolderPath), "Staff folder should exist");
                 Assert.That(Directory.Exists(FMS.PassengerFolderPath), "Passenger folder should exist");
             });
@@ -120,7 +120,7 @@ namespace trabalho_oop.Tests
             // Arrange
             _fms.Start();
             var airplane = new Airplane { Registration = "TEST123" };
-            string airplanePath = Path.Combine(FMS.AircraftFolderPath, "TEST123.json");
+            string airplanePath = Path.Combine(FMS.AirplaneFolderPath, "TEST123.json");
             File.WriteAllText(airplanePath, _testJsonContent);
 
             // Act
@@ -153,7 +153,7 @@ namespace trabalho_oop.Tests
         {
             // Arrange
             _fms.Start();
-            string testPath = Path.Combine(FMS.AircraftFolderPath, "test.json");
+            string testPath = Path.Combine(FMS.AirplaneFolderPath, "test.json");
             File.WriteAllText(testPath, _testJsonContent);
 
             // Act

@@ -17,7 +17,10 @@ namespace trabalho_oop.Tests
             foreach (char c in randomNumber)
             {
                 Assert.That(char.IsLetterOrDigit(c), Is.True);
-                Assert.That(char.IsUpper(c), Is.True);
+                if (char.IsLetter(c))
+                {
+                    Assert.That(char.IsUpper(c), Is.True);
+                }
             }
         }
 

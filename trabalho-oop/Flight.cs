@@ -23,8 +23,8 @@ namespace trabalho_oop
         private readonly ILogger _logger;  // Logger instance for flight-related logs
 
         public string Number { get; set; }  // The unique flight number (e.g., "AA123")
-        public string Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
-        public string Destination { get; private set; }  // The destination location of the flight (e.g., "Los Angeles")
+        public Airport Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
+        public Airport Destination { get; private set; }  // The destination location of the flight (e.g., "Los Angeles")
         public Airplane Airplane { get; private set; }  // The airplane assigned to the flight
         
         public DateTime ScheduledDateTime { get; private set; }  // The date and time the flight is scheduled to depart
@@ -132,7 +132,7 @@ namespace trabalho_oop
         /// <param name="airplane">The airplane assigned to the flight.</param>
         /// <param name="logger">A logger instance for logging flight-related activities.</param>
         /// <param name="scheduledDateTime">The scheduled date and time for the flight.</param>
-        public Flight(string number, string origin, string destination, Airplane airplane, ILogger logger, DateTime scheduledDateTime)
+        public Flight(string number, Airport origin, Airport destination, Airplane airplane, ILogger logger, DateTime scheduledDateTime)
         {
             // Ensure the logger is not null
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
@@ -168,7 +168,7 @@ namespace trabalho_oop
         /// <param name="origin">The origin location of the flight.</param>
         /// <param name="destination">The destination location of the flight.</param>
         /// <param name="airplane">The airplane assigned to the flight.</param>
-        private void ValidateConstructorParameters(string number, string origin, string destination, Airplane airplane)
+        private void ValidateConstructorParameters(string number, Airport origin, Airport destination, Airplane airplane)
         {
             try
             {
@@ -177,12 +177,12 @@ namespace trabalho_oop
                     throw new ArgumentException("Flight Number cannot be empty or whitespace.", nameof(number));
 
                 // Ensure the origin is valid
-                if (string.IsNullOrWhiteSpace(origin))
-                    throw new ArgumentException("Origin cannot be empty or whitespace.", nameof(origin));
+                if (origin == null)
+                    throw new ArgumentException("Origin cannot be null.", nameof(origin));
 
                 // Ensure the destination is valid
-                if (string.IsNullOrWhiteSpace(destination))
-                    throw new ArgumentException("Destination cannot be empty or whitespace.", nameof(destination));
+                if (destination == null)
+                    throw new ArgumentException("Destination cannot be null.", nameof(destination));
 
                 // Ensure the airplane is not null
                 if (airplane == null)

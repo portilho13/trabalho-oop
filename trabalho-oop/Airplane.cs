@@ -165,42 +165,12 @@ namespace trabalho_oop
         /// Returns the identifier of the airplane, which is its registration number.
         /// </summary>
         /// <returns>The registration number of the airplane</returns>
-        public string GetIdentifier()
-        {
-            try
-            {
-                // Ensure registration is not null or empty
-                if (string.IsNullOrWhiteSpace(Registration))
-                {
-                    throw new InvalidOperationException("Airplane registration is not set or is invalid.");
-                }
-                
-                // Return the registration as the identifier
-                return Registration;
-            }
-            catch (Exception ex)
-            {
-                // Catch any errors when retrieving the identifier
-                throw new InvalidOperationException($"Failed to get identifier for airplane", ex);
-            }
-        }
+        public string GetIdentifier() => Registration;
 
         /// <summary>
         /// Returns the entity type for this object, which is Airplane.
         /// </summary>
         /// <returns>The entity type of the object</returns>
-        public EntityType GetEntityType()
-        {
-            try
-            {
-                // Return the entity type for Airplane
-                return EntityType.Airplane;
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur while determining the entity type
-                throw new InvalidOperationException("Failed to get entity type", ex);
-            }
-        }
+        public EntityType GetEntityType() => EntityType.Airplane;
     }
 }

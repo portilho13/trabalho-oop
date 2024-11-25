@@ -73,9 +73,14 @@ namespace trabalho_oop
                 Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738", logger);
                 FMS.Instance.Save(ryanair); // Save the airplane details to the FMS
                 
+                Airport Porto = new Airport("Francisco Sa Carneiro", "OPO", "LPPR", logger);
+                Airport Milan = new Airport("Milan Malpensa", "MXP", "LIMC", logger);
+                FMS.Instance.Save(Porto);
+                FMS.Instance.Save(Milan);
+                
                 // Create a new Flight instance with specific details
                 DateTime flightDateTime = new DateTime(2024, 12, 25, 15, 30, 0); // Set flight date and time
-                Flight flight = new Flight("RYR4704", "Porto", "Milan", ryanair, logger, flightDateTime);
+                Flight flight = new Flight("RYR4704", Porto, Milan, ryanair, logger, flightDateTime);
                 flight.AddReservation(p); // Add the passenger reservation to the flight
                 FMS.Instance.Save(flight); // Save the flight details to the FMS
                 
