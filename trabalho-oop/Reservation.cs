@@ -35,15 +35,16 @@ namespace trabalho_oop
         /// <param name="logger">Logger for logging activities related to this reservation.</param>
         public Reservation(Passenger passenger, ILogger logger)
         {
+            // Set the logger for logging reservation activities
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            
             // Validate the input parameters for the constructor
             ValidateConstructorParameters(passenger);
             
             // Set the passenger and generate the reservation code
             Passenger = passenger;
             ReservationCode = NumberGenerator.GenerateRandomNumber();
-
-            // Set the logger for logging reservation activities
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            
         }
 
         /// <summary>
@@ -53,18 +54,10 @@ namespace trabalho_oop
         /// <param name="passenger">The passenger to be associated with the reservation.</param>
         private void ValidateConstructorParameters(Passenger passenger)
         {
-            try
+            // Check if the passenger is null
+            if (passenger == null)
             {
-                // Check if the passenger is null
-                if (passenger == null)
-                {
-                    throw new ArgumentNullException(nameof(passenger), "Passenger cannot be null.");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Wrap the validation exception into a new exception for better context
-                throw new InvalidOperationException("Unexpected error during parameter validation", ex);
+                throw new ArgumentNullException(nameof(passenger), "Passenger cannot be null.");
             }
         }
 

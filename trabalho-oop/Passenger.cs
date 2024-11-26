@@ -22,7 +22,7 @@ namespace trabalho_oop
     public class Passenger : Person, IStorable
     {
         // Fields
-        public string password;
+        public string Password { get; set; }
         public string Id { get; set; }
         
         // Logger instance to log actions performed by the passenger
@@ -30,25 +30,24 @@ namespace trabalho_oop
         private readonly ILogger _logger;
         
         // Collection of reservations made by the passenger
-        public Dictionary<string, Reservation> Reservations { get; private set; } = new Dictionary<string, Reservation>();
+        public Dictionary<string, Reservation> Reservations { get; set; } = new Dictionary<string, Reservation>();
 
         /// <summary>
         /// Constructor to create a new passenger with a unique identifier.
         /// Initializes the logger instance.
         /// </summary>
         /// <param name="logger">The logger instance used for logging passenger actions.</param>
-        public Passenger(ILogger logger)
+        public Passenger()
         {
-            Id = NumberGenerator.GenerateRandomNumber();  // Generate a unique passenger ID
-            _logger = logger;  // Initialize the logger
+            Id = NumberGenerator.GenerateRandomNumber(); // Generate a unique passenger ID
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         }
-        
+
         /// <summary>
         /// Parameterless constructor needed for deserialization (e.g., JSON deserialization).
         /// </summary>
         public Passenger()
         {
-            Id = NumberGenerator.GenerateRandomNumber();  // Generate a unique passenger ID
         }
 
         /// <summary>
@@ -100,17 +99,10 @@ namespace trabalho_oop
         {
             // Check if the reservation already exists
             if (!DoesReservationExists(reservation.ReservationCode))
-            {
                 // Add the reservation if it doesn't exist
                 Reservations.Add(reservation.ReservationCode, reservation);
-                // Log the action of adding the reservation
                 _logger.Info($"Added reservation {reservation.ReservationCode} for passenger {Id}.");
-            }
-            else
-            {
-                // Log a warning if the reservation already exists
-                _logger.Warn($"Reservation {reservation.ReservationCode} already exists for passenger {Id}. Skipping addition.");
-            }
+
         }
     }
 }

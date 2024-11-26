@@ -43,7 +43,6 @@ namespace trabalho_oop
         public Airplane(string company, string registration, int capacity, string model, ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
-
             try
             {
                 // Validate the constructor parameters before initializing
@@ -81,38 +80,24 @@ namespace trabalho_oop
         /// <param name="model">Model of the airplane</param>
         private void ValidateConstructorParameters(string company, string registration, int capacity, string model)
         {
-            try
-            {
-                // Ensure company is not empty or whitespace
-                if (string.IsNullOrWhiteSpace(company))
-                    throw new ArgumentException("Company name cannot be empty or whitespace.", nameof(company));
+            // Ensure company is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(company))
+                throw new ArgumentException("Company name cannot be empty or whitespace.", nameof(company));
 
-                // Ensure registration is not empty or whitespace and within valid length
-                if (string.IsNullOrWhiteSpace(registration))
-                    throw new ArgumentException("Registration cannot be empty or whitespace.", nameof(registration));
+            // Ensure registration is not empty or whitespace and within valid length
+            if (string.IsNullOrWhiteSpace(registration))
+                throw new ArgumentException("Registration cannot be empty or whitespace.", nameof(registration));
 
-                if (registration.Length < 5 || registration.Length > 10)
-                    throw new ArgumentException("Registration must be between 2 and 10 characters.", nameof(registration));
+            if (registration.Length < 5 || registration.Length > 10)
+                throw new ArgumentException("Registration must be between 2 and 10 characters.", nameof(registration));
 
-                // Ensure capacity is a positive value
-                if (capacity <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be a positive number.");
+            // Ensure capacity is a positive value
+            if (capacity <= 0)
+                throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be a positive number.");
 
-                // Ensure model is not empty or whitespace
-                if (string.IsNullOrWhiteSpace(model))
-                    throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
-
-            }
-            catch (Exception ex) when (ex is ArgumentException || ex is ArgumentOutOfRangeException)
-            {
-                // Rethrow validation exceptions to ensure they are handled properly
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // Catch and throw any other unexpected exceptions
-                throw new InvalidOperationException("Unexpected error during parameter validation", ex);
-            }
+            // Ensure model is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(model))
+                throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
         }
 
         /// <summary>
@@ -120,19 +105,11 @@ namespace trabalho_oop
         /// </summary>
         public void ChangeOccupiedStatus()
         {
-            try
-            {
-                // Toggle the occupation status
-                IsOccupied = !IsOccupied;
+            // Toggle the occupation status
+            IsOccupied = !IsOccupied;
                 
-                // Log the change in occupation status
-                _logger.Info($"Airplane {Registration} occupied status changed to {IsOccupied}.");
-            }
-            catch (Exception ex)
-            {
-                // Catch and throw any errors that occur during the status change
-                throw new InvalidOperationException($"Failed to change occupation status for airplane {Registration}", ex);
-            }
+            // Log the change in occupation status
+            _logger.Info($"Airplane {Registration} occupied status changed to {IsOccupied}.");
         }
 
         /// <summary>

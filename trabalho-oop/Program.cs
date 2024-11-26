@@ -46,7 +46,7 @@ namespace trabalho_oop
                 sessionManager.DisplayPassengers();
 
                 // Register and login a new passenger (commented-out for now)
-                // sessionManager.RegisterPassanger("Junior", "junior@gmail.com", "junior");
+                //sessionManager.RegisterPassanger("Junior", "junior@gmail.com", "junior");
                 sessionManager.LoginPassenger("junior@gmail.com", "junior");
                 sessionManager.IsAuthenticated();
 
@@ -70,8 +70,8 @@ namespace trabalho_oop
                 fleet.ShowAircraftList(); // Display the list of available aircraft
                 
                 // Create a new Airplane instance
-                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738", logger);
-                FMS.Instance.Save(ryanair); // Save the airplane details to the FMS
+                //Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738", logger);
+                //FMS.Instance.Save(ryanair); // Save the airplane details to the FMS
                 
                 Airport Porto = new Airport("Francisco Sa Carneiro", "OPO", "LPPR", logger);
                 Airport Milan = new Airport("Milan Malpensa", "MXP", "LIMC", logger);
@@ -80,9 +80,9 @@ namespace trabalho_oop
                 
                 // Create a new Flight instance with specific details
                 DateTime flightDateTime = new DateTime(2024, 12, 25, 15, 30, 0); // Set flight date and time
-                Flight flight = new Flight("RYR4704", Porto, Milan, ryanair, logger, flightDateTime);
-                flight.AddReservation(p); // Add the passenger reservation to the flight
-                FMS.Instance.Save(flight); // Save the flight details to the FMS
+                //Flight flight = new Flight("RYR4704", Porto, Milan, ryanair, logger, flightDateTime);
+                //flight.AddReservation(p); // Add the passenger reservation to the flight
+                //FMS.Instance.Save(flight); // Save the flight details to the FMS
                 
                 // Save the session data (so that it can be loaded next time the system starts)
                 sessionManager.Save();

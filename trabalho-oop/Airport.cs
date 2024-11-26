@@ -25,27 +25,19 @@ public class Airport: IStorable
     
     private void ValidateConstructorParameters(string airportName, string iata, string icao)
     {
-        try
+        if (string.IsNullOrEmpty(airportName))
         {
-            if (string.IsNullOrEmpty(airportName))
-            {
-                throw new ArgumentNullException(nameof(airportName), "Airport Name cannot be null or empty.");
-            }
-            
-            if (string.IsNullOrEmpty(iata))
-            {
-                throw new ArgumentNullException(nameof(iata), "IATA cannot be null or empty.");
-            }
-            
-            if (string.IsNullOrEmpty(icao))
-            {
-                throw new ArgumentNullException(nameof(airportName), "ICAO cannot be null or empty.");
-            }
+            throw new ArgumentNullException(nameof(airportName), "Airport Name cannot be null or empty.");
         }
-        catch (Exception ex)
+        
+        if (string.IsNullOrEmpty(iata))
         {
-            // Wrap the validation exception into a new exception for better context
-            throw new InvalidOperationException("Unexpected error during parameter validation", ex);
+            throw new ArgumentNullException(nameof(iata), "IATA cannot be null or empty.");
+        }
+        
+        if (string.IsNullOrEmpty(icao))
+        {
+            throw new ArgumentNullException(nameof(icao), "ICAO cannot be null or empty.");
         }
     }
     

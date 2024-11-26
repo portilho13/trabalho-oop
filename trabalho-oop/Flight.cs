@@ -115,9 +115,9 @@ namespace trabalho_oop
                 // Continuously generate new reservation codes until a unique one is found
                 reservation = new Reservation(passenger, _logger);
             } while (PassengersReservations.ContainsKey(reservation.ReservationCode));
-
-            // Associate the reservation with the passenger and add it to the reservations dictionary
+            
             passenger.AddReservation(reservation);
+            // Associate the reservation with the passenger and add it to the reservations dictionary
             PassengersReservations.Add(reservation.ReservationCode, reservation);
         }
         
