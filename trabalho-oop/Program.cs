@@ -84,6 +84,7 @@ namespace trabalho_oop
                 flight.AddReservation(p); // Add the passenger reservation to the flight
                 FMS.Instance.Save(flight); // Save the flight details to the FMS*/
                 
+                Console.WriteLine("Press any key to exit...");
                 p.ShowReservations();
                 
                 // Save the session data (so that it can be loaded next time the system starts)
