@@ -1,5 +1,4 @@
 name: Run Tests Before Merge
-
 on:
   pull_request:
     branches:
@@ -7,19 +6,11 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+      - run: dotnet restore
+      - run: dotnet test --no-build --verbosity normal
