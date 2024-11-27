@@ -17,15 +17,7 @@ namespace trabalho_oop
         // Fields to hold passenger names and surnames, fetched from FMS instance
         private List<string> _passengerNames = FMS.Instance.GetPassengerNames();
         private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
-
-        // Logger instance to log actions
-        private readonly Logger _logger;
         
-        /// <summary>
-        /// Constructor to initialize the PassengerList with a logger instance.
-        /// </summary>
-        /// <param name="logger">The logger instance used for logging actions in the passenger list.</param>
-        public PassengerList(Logger logger) => _logger = logger;
 
         /// <summary>
         /// Generates a random passenger name by selecting a random name and surname from predefined lists.
@@ -63,27 +55,35 @@ namespace trabalho_oop
         /// </summary>
         /// <param name="passengerCount">The number of passengers to generate.</param>
         /// <returns>A dictionary with reservation codes as keys and corresponding reservations as values.</returns>
-        public Dictionary<string, Reservation> GeneratePassengerList(int passengerCount)
+        public Dictionary<string, FlightReservation> GeneratePassengerList(int passengerCount)
         {
             // Dictionary to store the generated passengers and their reservations
-            Dictionary<string, Reservation> passengersReservatonList = new Dictionary<string, Reservation>();
+            Dictionary<string, FlightReservation> passengersReservatonList = new Dictionary<string, FlightReservation>();
 
             // Loop to generate the specified number of passengers
             for (int i = 0; i < passengerCount; i++)
             {
                 // Create a new passenger and assign a random name
-                Passenger p = new Passenger(_logger);
+                Passenger p = new Passenger();
                 string passengerName = GenerateRandomPassenger();
                 p.Name = passengerName;
 
                 // Create a new reservation for the passenger
-                Reservation r = new Reservation(p, _logger);
+                FlightReservation r;
+
+                string reservationCode;
 
                 // Ensure the reservation code is unique by generating it until it's not found in the dictionary
                 do
                 {
-                    r.ReservationCode = NumberGenerator.GenerateRandomNumber();
-                } while (passengersReservatonList.ContainsKey(r.ReservationCode));
+                    reservationCode = NumberGenerator.GenerateRandomNumber();
+                } while (passengersReservatonList.ContainsKey(reservationCode));
+
+                r = new FlightReservation
+                {
+                    PassengerName = p.Name,
+                    ReservationCode = reservationCode
+                };
 
                 // Add the reservation to the dictionary
                 passengersReservatonList.Add(r.ReservationCode, r);

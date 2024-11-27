@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 //    <copyright file="Airplane.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -19,7 +19,7 @@ namespace trabalho_oop
     public class Airplane : IStorable
     {
         // Private logger instance to log information and errors
-        private readonly Logger _logger;
+        private ILogger _logger;
         
         // Public properties with getters and setters to manage airplane details
         public string Company { get; set; }
@@ -40,37 +40,22 @@ namespace trabalho_oop
         /// <param name="capacity">Capacity of the airplane</param>
         /// <param name="model">Model of the airplane</param>
         /// <param name="logger">Logger instance to log information</param>
-        public Airplane(string company, string registration, int capacity, string model, Logger logger)
+        public Airplane(string company, string registration, int capacity, string model)
         {
-            try
-            {
-                // Validate the constructor parameters before initializing
-                ValidateConstructorParameters(company, registration, capacity, model);
+            // Validate the constructor parameters before initializing
+            ValidateConstructorParameters(company, registration, capacity, model);
 
-                // Initialize properties
-                Company = company;
-                Registration = registration;
-                Capacity = capacity;
-                IsOccupied = false;  // Default value for IsOccupied
-                Model = model;
+            // Initialize properties
+            Company = company;
+            Registration = registration;
+            Capacity = capacity;
+            IsOccupied = false;  // Default value for IsOccupied
+            Model = model;
                 
-                // Assign the logger instance
-                _logger = logger;
-
-                // Log the successful creation of the airplane
-                _logger.Info($"Airplane {Registration} created successfully. Company: {Company}, Capacity: {Capacity}");
-            }
-            catch (ArgumentException ex)
-            {
-                // Rethrow the exception with a detailed message
-                throw new ArgumentException("Failed to create airplane due to invalid parameters", ex);
-            }
-            catch (Exception ex)
-            {
-                // Catch all other exceptions
-                throw new InvalidOperationException("Unexpected error occurred while creating airplane", ex);
-            }
+            
         }
+        
+        public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
 
         /// <summary>
         /// Validates the constructor parameters to ensure they meet required conditions.
@@ -81,38 +66,24 @@ namespace trabalho_oop
         /// <param name="model">Model of the airplane</param>
         private void ValidateConstructorParameters(string company, string registration, int capacity, string model)
         {
-            try
-            {
-                // Ensure company is not empty or whitespace
-                if (string.IsNullOrWhiteSpace(company))
-                    throw new ArgumentException("Company name cannot be empty or whitespace.", nameof(company));
+            // Ensure company is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(company))
+                throw new ArgumentException("Company name cannot be empty or whitespace.", nameof(company));
 
-                // Ensure registration is not empty or whitespace and within valid length
-                if (string.IsNullOrWhiteSpace(registration))
-                    throw new ArgumentException("Registration cannot be empty or whitespace.", nameof(registration));
+            // Ensure registration is not empty or whitespace and within valid length
+            if (string.IsNullOrWhiteSpace(registration))
+                throw new ArgumentException("Registration cannot be empty or whitespace.", nameof(registration));
 
-                if (registration.Length < 5 || registration.Length > 10)
-                    throw new ArgumentException("Registration must be between 2 and 10 characters.", nameof(registration));
+            if (registration.Length < 5 || registration.Length > 10)
+                throw new ArgumentException("Registration must be between 2 and 10 characters.", nameof(registration));
 
-                // Ensure capacity is a positive value
-                if (capacity <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be a positive number.");
+            // Ensure capacity is a positive value
+            if (capacity <= 0)
+                throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be a positive number.");
 
-                // Ensure model is not empty or whitespace
-                if (string.IsNullOrWhiteSpace(model))
-                    throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
-
-            }
-            catch (Exception ex) when (ex is ArgumentException || ex is ArgumentOutOfRangeException)
-            {
-                // Rethrow validation exceptions to ensure they are handled properly
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // Catch and throw any other unexpected exceptions
-                throw new InvalidOperationException("Unexpected error during parameter validation", ex);
-            }
+            // Ensure model is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(model))
+                throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
         }
 
         /// <summary>
@@ -120,19 +91,10 @@ namespace trabalho_oop
         /// </summary>
         public void ChangeOccupiedStatus()
         {
-            try
-            {
-                // Toggle the occupation status
-                IsOccupied = !IsOccupied;
+            // Toggle the occupation status
+            IsOccupied = !IsOccupied;
                 
-                // Log the change in occupation status
-                _logger.Info($"Airplane {Registration} occupied status changed to {IsOccupied}.");
-            }
-            catch (Exception ex)
-            {
-                // Catch and throw any errors that occur during the status change
-                throw new InvalidOperationException($"Failed to change occupation status for airplane {Registration}", ex);
-            }
+            // Log the change in occupation status
         }
 
         /// <summary>
@@ -165,42 +127,12 @@ namespace trabalho_oop
         /// Returns the identifier of the airplane, which is its registration number.
         /// </summary>
         /// <returns>The registration number of the airplane</returns>
-        public string GetIdentifier()
-        {
-            try
-            {
-                // Ensure registration is not null or empty
-                if (string.IsNullOrWhiteSpace(Registration))
-                {
-                    throw new InvalidOperationException("Airplane registration is not set or is invalid.");
-                }
-                
-                // Return the registration as the identifier
-                return Registration;
-            }
-            catch (Exception ex)
-            {
-                // Catch any errors when retrieving the identifier
-                throw new InvalidOperationException($"Failed to get identifier for airplane", ex);
-            }
-        }
+        public string GetIdentifier() => Registration;
 
         /// <summary>
         /// Returns the entity type for this object, which is Airplane.
         /// </summary>
         /// <returns>The entity type of the object</returns>
-        public EntityType GetEntityType()
-        {
-            try
-            {
-                // Return the entity type for Airplane
-                return EntityType.Airplane;
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors that occur while determining the entity type
-                throw new InvalidOperationException("Failed to get entity type", ex);
-            }
-        }
+        public EntityType GetEntityType() => EntityType.Airplane;
     }
 }

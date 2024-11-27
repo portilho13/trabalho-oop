@@ -77,34 +77,25 @@ namespace trabalho_oop
         /// <returns>Generated staff code</returns>
         private string GenerateStaffCode()
         {
-            try
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            var random = new Random();
+            var staffCode = new char[6];
+
+            // Generating the staff code by randomly selecting characters
+            for (int i = 0; i < staffCode.Length; i++)
             {
-                const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                var random = new Random();
-                var staffCode = new char[6];
-
-                // Generating the staff code by randomly selecting characters
-                for (int i = 0; i < staffCode.Length; i++)
-                {
-                    staffCode[i] = chars[random.Next(chars.Length)];
-                }
-
-                string generatedCode = new string(staffCode);
-                
-                // Ensuring the generated code is not empty
-                if (string.IsNullOrEmpty(generatedCode))
-                {
-                    throw new InvalidOperationException("Generated staff code is empty");
-                }
-
-                return generatedCode;
+                staffCode[i] = chars[random.Next(chars.Length)];
             }
-            catch (Exception ex)
+
+            string generatedCode = new string(staffCode);
+    
+            // Simple validation can be a direct throw
+            if (string.IsNullOrEmpty(generatedCode))
             {
-                // Logging the error if staff code generation fails
-                _logger.Error($"Failed to generate staff code: {ex.Message}");
-                throw new InvalidOperationException("Failed to generate staff code", ex);
+                throw new InvalidOperationException("Generated staff code is empty");
             }
+
+            return generatedCode;
         }
 
         /// <summary>
@@ -158,18 +149,8 @@ namespace trabalho_oop
         /// <param name="password">Plain text password to set</param>
         public void SetPassword(string password)
         {
-            try
-            {
-                // Hashing the password and storing it securely
-                this.password = HashPassword(password);
-                _logger.Info($"Password set for staff member: {staffCode}.");
-            }
-            catch (Exception ex)
-            {
-                // Logging errors during password setting
-                _logger.Error($"Failed to set password for staff member {staffCode}: {ex.Message}");
-                throw new InvalidOperationException($"Failed to set password for staff member {staffCode}", ex);
-            }
+            this.password = HashPassword(password);
+            _logger.Info($"Password set for staff member: {staffCode}.");
         }
 
         /// <summary>
@@ -178,20 +159,9 @@ namespace trabalho_oop
         /// </summary>
         public Staff(Logger logger)
         {
-            try
-            {
-                _logger = logger;
-
-                // Generating a unique staff code upon initialization
-                this.staffCode = GenerateStaffCode();
-                _logger.Info($"New staff created with staff code: {staffCode}.");
-            }
-            catch (Exception ex)
-            {
-                // Logging the error if staff creation fails
-                logger.Error($"Failed to create new staff member: {ex.Message}");
-                throw new InvalidOperationException("Failed to create new staff member", ex);
-            }
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+            staffCode = GenerateStaffCode();
+            _logger.Info($"New staff created with staff code: {staffCode}.");
         }
     }
 }

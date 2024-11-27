@@ -59,30 +59,21 @@ namespace trabalho_oop
         /// <param name="logger">Logger for session-related activities.</param>
         public Session(Person person, Logger logger)
         {
-            try
+            // Check if the person parameter is null and throw an exception if so
+            if (person == null)
             {
-                // Check if the person parameter is null and throw an exception if so
-                if (person == null)
-                {
-                    throw new ArgumentNullException(nameof(person), "Cannot create session with null person");
-                }
-
-                // Initialize the logger
-                _logger = logger;
-
-                // Set the logged-in person and session creation time
-                LoggedInPerson = person;
-                CreatedAt = DateTime.Now;
-
-                // Log the session creation
-                _logger.Info($"Session created for person: {person.GetType().Name}");
+                throw new ArgumentNullException(nameof(person), "Cannot create session with null person");
             }
-            catch (Exception ex) when (ex is not ArgumentNullException)
-            {
-                // Log errors but rethrow as a more general InvalidOperationException
-                _logger.Error($"Failed to create session: {ex.Message}");
-                throw new InvalidOperationException("Failed to initialize session", ex);
-            }
+
+            // Initialize the logger
+            _logger = logger;
+
+            // Set the logged-in person and session creation time
+            LoggedInPerson = person;
+            CreatedAt = DateTime.Now;
+
+            // Log the session creation
+            _logger.Info($"Session created for person: {person.GetType().Name}");
         }
         
         /// <summary>

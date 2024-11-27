@@ -17,7 +17,7 @@ namespace trabalho_oop
     /// The Logger class is responsible for logging messages to both the console
     /// and a specified log file. It supports different log levels (INFO, WARN, ERROR).
     /// </summary>
-    public class Logger
+    public class Logger: ILogger
     {
         private readonly string _logFilePath;  // Path where the log file is stored
 

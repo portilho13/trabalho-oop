@@ -40,6 +40,11 @@ namespace trabalho_oop
         /// Represents a reservation entity.
         /// </summary>
         Reservation,
+        
+        /// <summary>
+        /// Represents a airport entity.
+        /// </summary>
+        Airport,
 
         /// <summary>
         /// Represents an unknown entity type. Used as a default or fallback value.

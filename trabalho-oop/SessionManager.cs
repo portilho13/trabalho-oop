@@ -160,8 +160,8 @@ namespace trabalho_oop
             }
             catch (Exception ex)
             {
-                _logger.Error($"Failed to load staff data: {ex.Message}");
-                throw new InvalidOperationException("Failed to load staff data from FMS", ex);
+                _logger.Error($"Failed to load staff or passenger data: {ex.Message}");
+                throw new InvalidOperationException("Failed to load staff or passenger data from FMS", ex);
             }
         }
 
@@ -184,7 +184,7 @@ namespace trabalho_oop
                     throw new InvalidOperationException("Passenger list not initialized");
 
                 // Check if a passenger exists with the provided email and password
-                Passenger passenger = _passengers.Find(s => s.Email == email && s.password == password);
+                Passenger passenger = _passengers.Find(s => s.Email == email && s.Password == password);
 
                 if (passenger != null)
                 {
@@ -258,7 +258,7 @@ namespace trabalho_oop
         {
             foreach (Passenger passenger in _passengers)
             {
-                Console.WriteLine($"Passenger: {passenger.ToString()}");
+                Console.WriteLine($"Passenger: {passenger.Name}, {passenger.Email}, {passenger.Id}");
             }
         }
 
@@ -360,12 +360,13 @@ namespace trabalho_oop
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Passenger passenger = new Passenger(_logger)
+                Passenger passenger = new Passenger()
                 {
                     Name = name,
-                    Email = email
+                    Email = email,
+                    Id = NumberGenerator.GenerateRandomNumber()
                 };
-                passenger.password = password;
+                passenger.Password = password;
 
                 _passengers.Add(passenger);
                 _logger.Info($"New passenger registered: {name} ({email})");
