@@ -14,7 +14,7 @@ namespace trabalho_oop.Tests
         public void Setup()
         {
             _logger = new TestLogger();
-            _airport = new Airport("Lisbon Airport", "LIS", "LPPT", _logger);
+            _airport = new Airport("Lisbon Airport", "LIS", "LPPT");
         }
 
         [Test]
@@ -23,31 +23,31 @@ namespace trabalho_oop.Tests
             Assert.That(_airport.AirportName, Is.EqualTo("Lisbon Airport"));
             Assert.That(_airport.IATA, Is.EqualTo("LIS"));
             Assert.That(_airport.ICAO, Is.EqualTo("LPPT"));
-            Assert.That(_logger.LoggedMessages, Contains.Item("INFO: Created Airport: Lisbon Airport"));
         }
 
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", "LPPT", null));
+            Airport airport = new Airport("Lisbon Airport", "LIS", "LPPT");
+            Assert.Throws<ArgumentNullException>(() => airport.SetLogger(null));
         }
 
         [Test]
         public void Constructor_EmptyAirportName_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("", "LIS", "LPPT", _logger));
+            Assert.Throws<ArgumentNullException>(() => new Airport("", "LIS", "LPPT"));
         }
 
         [Test]
         public void Constructor_EmptyIATA_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "", "LPPT", _logger));
+            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "", "LPPT"));
         }
 
         [Test]
         public void Constructor_EmptyICAO_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", "", _logger));
+            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", ""));
         }
 
         [Test]

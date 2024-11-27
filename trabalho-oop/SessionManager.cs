@@ -360,10 +360,11 @@ namespace trabalho_oop
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Passenger passenger = new Passenger(_logger)
+                Passenger passenger = new Passenger()
                 {
                     Name = name,
-                    Email = email
+                    Email = email,
+                    Id = NumberGenerator.GenerateRandomNumber()
                 };
                 passenger.Password = password;
 

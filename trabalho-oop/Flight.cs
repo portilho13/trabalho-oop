@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 //    <copyright file="Flight.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -20,7 +20,7 @@ namespace trabalho_oop
     /// </summary>
     public class Flight : IStorable
     {
-        private readonly ILogger _logger;  // Logger instance for flight-related logs
+        private ILogger _logger;  // Logger instance for flight-related logs
 
         public string Number { get; set; }  // The unique flight number (e.g., "AA123")
         public Airport Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
@@ -28,7 +28,9 @@ namespace trabalho_oop
         public Airplane Airplane { get; private set; }  // The airplane assigned to the flight
         
         public DateTime ScheduledDateTime { get; private set; }  // The date and time the flight is scheduled to depart
-        public Dictionary<string, Reservation> PassengersReservations { get; private set; }  // Reservations for passengers, indexed by reservation code
+
+        public Dictionary<string, FlightReservation> PassengersReservations { get; private set; } =
+            new Dictionary<string, FlightReservation>(); // Reservations for passengers, indexed by reservation code
 
         /// <summary>
         /// Gets the unique identifier for the flight, which is the flight number.
@@ -109,17 +111,35 @@ namespace trabalho_oop
         /// <param name="passenger">The passenger to add a reservation for.</param>
         public void AddReservation(Passenger passenger)
         {
-            Reservation reservation;
+            PassengerReservation reservation;
+            FlightReservation flightReservation;
+            string reservationCode;
+
+            // Generate a unique reservation code
             do
             {
-                // Continuously generate new reservation codes until a unique one is found
-                reservation = new Reservation(passenger, _logger);
-            } while (PassengersReservations.ContainsKey(reservation.ReservationCode));
-            
+                reservationCode = NumberGenerator.GenerateRandomNumber();
+            } while (PassengersReservations.ContainsKey(reservationCode));
+
+            // Create the reservation object
+            reservation = new PassengerReservation
+            {
+                ReservationCode = reservationCode,
+                FlightNumber = Number,
+            };
+
+            // Add the reservation to the passenger
             passenger.AddReservation(reservation);
-            // Associate the reservation with the passenger and add it to the reservations dictionary
-            PassengersReservations.Add(reservation.ReservationCode, reservation);
+
+            flightReservation = new FlightReservation
+            {
+                ReservationCode = reservationCode,
+            };
+
+            // Associate the reservation with the passenger and add it to the dictionary
+            PassengersReservations.Add(reservationCode, flightReservation);
         }
+
         
         public Flight() {} // Constructor for deserelization 
         
@@ -132,16 +152,13 @@ namespace trabalho_oop
         /// <param name="airplane">The airplane assigned to the flight.</param>
         /// <param name="logger">A logger instance for logging flight-related activities.</param>
         /// <param name="scheduledDateTime">The scheduled date and time for the flight.</param>
-        public Flight(string number, Airport origin, Airport destination, Airplane airplane, ILogger logger, DateTime scheduledDateTime)
+        public Flight(string number, Airport origin, Airport destination, Airplane airplane, DateTime scheduledDateTime)
         {
             // Ensure the logger is not null
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
 
             // Validate the constructor parameters
             ValidateConstructorParameters(number, origin, destination, airplane);
-
-            // Log flight creation details
-            _logger.Info($"Creating flight {number} from {origin} to {destination} using airplane {airplane.Registration} scheduled for {scheduledDateTime}");
+            
 
             // Mark the airplane as occupied (it will be used for this flight)
             airplane.ChangeOccupiedStatus();
@@ -154,12 +171,12 @@ namespace trabalho_oop
             ScheduledDateTime = scheduledDateTime;  // Set the scheduled departure date and time
 
             // Generate a list of passenger reservations
-            PassengerList p = new PassengerList(logger);
+            PassengerList p = new PassengerList();
             PassengersReservations = p.GeneratePassengerList(GenerateRandomNumberOfPassengers());
-
-            // Log successful flight creation
-            _logger.Info($"Flight {number} created successfully with {PassengersReservations.Count} passengers, scheduled for {ScheduledDateTime}.");
+            
         }
+        
+        public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         
         /// <summary>
         /// Validates the input parameters to ensure they are not null or empty.

@@ -15,14 +15,20 @@ namespace trabalho_oop.Tests
         public void Setup()
         {
             _testLogger = new TestLogger();
-            _passenger = new Passenger(_testLogger);
+            _passenger = new Passenger
+            {
+                Id = NumberGenerator.GenerateRandomNumber()
+            };
         }
 
         [Test]
         public void Constructor_GeneratesUniqueId()
         {
             string firstPassengerId = _passenger.Id;
-            Passenger secondPassenger = new Passenger(_testLogger);
+            Passenger secondPassenger = new Passenger
+            {
+                Id = NumberGenerator.GenerateRandomNumber()
+            };
             Assert.That(secondPassenger.Id, Is.Not.EqualTo(firstPassengerId));
         }
 
@@ -48,20 +54,26 @@ namespace trabalho_oop.Tests
         [Test]
         public void AddReservation_AddsReservationToCollection()
         {
-            Reservation reservation = new Reservation(_passenger, _testLogger);
+            PassengerReservation reservation = new PassengerReservation
+            {
+                FlightNumber = "RYR4703",
+                ReservationCode = NumberGenerator.GenerateRandomNumber()
+            };
             _passenger.AddReservation(reservation);
             Assert.That(_passenger.Reservations, Contains.Key(reservation.ReservationCode));
-            Assert.That(_testLogger.LoggedMessages, Contains.Item($"INFO: Added reservation {reservation.ReservationCode} for passenger " + _passenger.Id + "."));
         }
 
         [Test]
         public void AddReservation_SkipsExistingReservation()
         {
-            Reservation reservation = new Reservation(_passenger, _testLogger);
+            PassengerReservation reservation = new PassengerReservation
+            {
+                FlightNumber = "RYR4703",
+                ReservationCode = NumberGenerator.GenerateRandomNumber()
+            };
             _passenger.AddReservation(reservation);
             _passenger.AddReservation(reservation);
             Assert.That(_passenger.Reservations.Count, Is.EqualTo(1));
-            Assert.That(_testLogger.LoggedMessages, Contains.Item($"WARN: Reservation {reservation.ReservationCode} already exists for passenger " + _passenger.Id + ". Skipping addition."));
         }
     }
 }

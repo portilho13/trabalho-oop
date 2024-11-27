@@ -24,15 +24,15 @@ namespace trabalho_oop.Tests
             var model = "Boeing 737";
 
             // Act
-            var airplane = new Airplane(company, registration, capacity, model, _logger);
+            var airplane = new Airplane(company, registration, capacity, model);
+            airplane.SetLogger(_logger);
 
             // Assert
-            Assert.AreEqual(company, airplane.Company);
-            Assert.AreEqual(registration, airplane.Registration);
-            Assert.AreEqual(capacity, airplane.Capacity);
-            Assert.AreEqual(model, airplane.Model);
+            Assert.That(company, Is.EqualTo(airplane.Company));
+            Assert.That(registration, Is.EqualTo(airplane.Registration));
+            Assert.That(capacity, Is.EqualTo(airplane.Capacity));
+            Assert.That(model, Is.EqualTo(airplane.Model));
             Assert.IsFalse(airplane.IsOccupied);
-            Assert.That(_logger.LoggedMessages, Does.Contain($"INFO: Airplane {registration} created successfully. Company: {company}, Capacity: {capacity}"));
         }
 
         [Test]
@@ -40,28 +40,27 @@ namespace trabalho_oop.Tests
         {
             // Arrange & Act & Assert
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Airplane("", "RY12345", 200, "Boeing 737", _logger));
+                new Airplane("", "RY12345", 200, "Boeing 737"));
         }
 
         [Test]
         public void ChangeOccupiedStatus_TogglesStatus_LogsChange()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
 
             // Act
             airplane.ChangeOccupiedStatus();
 
             // Assert
             Assert.IsTrue(airplane.IsOccupied);
-            Assert.That(_logger.LoggedMessages, Does.Contain($"INFO: Airplane {airplane.Registration} occupied status changed to True."));
         }
 
         [Test]
         public void ConvertToJson_ValidAirplane_ReturnsJsonString()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
 
             // Act
             var json = airplane.ConvertToJson();
@@ -76,7 +75,7 @@ namespace trabalho_oop.Tests
         public void GetIdentifier_ValidRegistration_ReturnsRegistration()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "EI-GSG", 200, "Boeing 737", _logger);
+            var airplane = new Airplane("Ryanair", "EI-GSG", 200, "Boeing 737");
 
             // Act
             var identifier = airplane.GetIdentifier();
@@ -89,24 +88,23 @@ namespace trabalho_oop.Tests
         public void GetEntityType_ReturnsAirplane()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
 
             // Act
             var entityType = airplane.GetEntityType();
 
             // Assert
-            Assert.AreEqual(EntityType.Airplane, entityType);
+            Assert.That(EntityType.Airplane, Is.EqualTo(entityType));
         }
 
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
+            Airplane a = new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737");
             // Arrange & Act & Assert
             var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737", null));
-
-            // Assert that the exception's message contains 'logger'
-            Assert.That(ex.Message, Does.Contain("logger"));
+                a.SetLogger(null));
+            
         }
     }
 }

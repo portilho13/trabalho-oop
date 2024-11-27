@@ -23,7 +23,7 @@ namespace trabalho_oop.Tests
             var model = "Boeing 737";
 
             // Act
-            _testAirplane = new Airplane(company, registration, capacity, model, _logger);
+            _testAirplane = new Airplane(company, registration, capacity, model);
         }
 
         [Test]
@@ -44,17 +44,21 @@ namespace trabalho_oop.Tests
             // Arrange
             _fleet.AddAirplane(_testAirplane);
 
-            // Act & Assert
+            // Act
             var duplicateAirplane = new Airplane(
-                _testAirplane.Company, 
-                _testAirplane.Registration, 
-                _testAirplane.Capacity, 
-                _testAirplane.Model, 
-                _logger
+                _testAirplane.Company,
+                _testAirplane.Registration,
+                _testAirplane.Capacity,
+                _testAirplane.Model
             );
-            Assert.Throws<InvalidOperationException>(() => 
-                _fleet.AddAirplane(duplicateAirplane));
+
+            // Assert
+            var exception = Assert.Throws<InvalidOperationException>(() => 
+                _fleet.AddAirplane(duplicateAirplane)
+            );
+
         }
+
 
         [Test]
         public void GetAirplane_ExistingRegistration_ReturnsAirplane()
@@ -66,7 +70,7 @@ namespace trabalho_oop.Tests
             var retrievedAirplane = _fleet.GetAirplane("EI-ABC");
 
             // Assert
-            Assert.AreEqual(_testAirplane, retrievedAirplane);
+            Assert.That(_testAirplane, Is.EqualTo(retrievedAirplane));
         }
 
         [Test]

@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
@@ -30,17 +31,33 @@ namespace trabalho_oop
         private readonly ILogger _logger;
         
         // Collection of reservations made by the passenger
-        public Dictionary<string, Reservation> Reservations { get; set; } = new Dictionary<string, Reservation>();
+        public Dictionary<string, PassengerReservation> Reservations { get; set; } = new Dictionary<string, PassengerReservation>();
 
         /// <summary>
         /// Constructor to create a new passenger with a unique identifier.
-        /// Initializes the logger instance.
         /// </summary>
-        /// <param name="logger">The logger instance used for logging passenger actions.</param>
-        public Passenger()
+        public Passenger(string name, string email, string password)
         {
+            ValidateConstructorParameters(name, email, password);
+            Name = name;
+            Email = email;
+            Password = password;
             Id = NumberGenerator.GenerateRandomNumber(); // Generate a unique passenger ID
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+        }
+        
+        private void ValidateConstructorParameters(string name, string email, string password)
+        {
+            // Ensure company is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be empty or whitespace.", nameof(name));
+
+            // Ensure registration is not empty or whitespace and within valid length
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
+
+            // Ensure model is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password cannot be empty or whitespace.", nameof(password));
         }
 
         /// <summary>
@@ -95,14 +112,20 @@ namespace trabalho_oop
         /// Adds a reservation to the passenger's collection if it doesn't already exist.
         /// </summary>
         /// <param name="reservation">The reservation to add.</param>
-        public void AddReservation(Reservation reservation)
+        public void AddReservation(PassengerReservation reservation)
         {
             // Check if the reservation already exists
             if (!DoesReservationExists(reservation.ReservationCode))
                 // Add the reservation if it doesn't exist
                 Reservations.Add(reservation.ReservationCode, reservation);
-                _logger.Info($"Added reservation {reservation.ReservationCode} for passenger {Id}.");
+        }
 
+        public void ShowReservations()
+        {
+            foreach (PassengerReservation p in Reservations.Values)
+            {
+                Console.WriteLine(p.ReservationCode);
+            }
         }
     }
 }

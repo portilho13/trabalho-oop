@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 //    <copyright file="Airplane.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -19,7 +19,7 @@ namespace trabalho_oop
     public class Airplane : IStorable
     {
         // Private logger instance to log information and errors
-        private readonly ILogger _logger;
+        private ILogger _logger;
         
         // Public properties with getters and setters to manage airplane details
         public string Company { get; set; }
@@ -40,36 +40,22 @@ namespace trabalho_oop
         /// <param name="capacity">Capacity of the airplane</param>
         /// <param name="model">Model of the airplane</param>
         /// <param name="logger">Logger instance to log information</param>
-        public Airplane(string company, string registration, int capacity, string model, ILogger logger)
+        public Airplane(string company, string registration, int capacity, string model)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
-            try
-            {
-                // Validate the constructor parameters before initializing
-                ValidateConstructorParameters(company, registration, capacity, model);
+            // Validate the constructor parameters before initializing
+            ValidateConstructorParameters(company, registration, capacity, model);
 
-                // Initialize properties
-                Company = company;
-                Registration = registration;
-                Capacity = capacity;
-                IsOccupied = false;  // Default value for IsOccupied
-                Model = model;
+            // Initialize properties
+            Company = company;
+            Registration = registration;
+            Capacity = capacity;
+            IsOccupied = false;  // Default value for IsOccupied
+            Model = model;
                 
-
-                // Log the successful creation of the airplane
-                _logger.Info($"Airplane {Registration} created successfully. Company: {Company}, Capacity: {Capacity}");
-            }
-            catch (ArgumentException ex)
-            {
-                // Rethrow the exception with a detailed message
-                throw new ArgumentException("Failed to create airplane due to invalid parameters", ex);
-            }
-            catch (Exception ex)
-            {
-                // Catch all other exceptions
-                throw new InvalidOperationException("Unexpected error occurred while creating airplane", ex);
-            }
+            
         }
+        
+        public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
 
         /// <summary>
         /// Validates the constructor parameters to ensure they meet required conditions.
@@ -109,7 +95,6 @@ namespace trabalho_oop
             IsOccupied = !IsOccupied;
                 
             // Log the change in occupation status
-            _logger.Info($"Airplane {Registration} occupied status changed to {IsOccupied}.");
         }
 
         /// <summary>

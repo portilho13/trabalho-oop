@@ -8,20 +8,20 @@ public class Airport: IStorable
     public string IATA { get; set; }
     public string ICAO { get; set; }
     
-    private readonly ILogger _logger;
+    private ILogger _logger;
 
 
-    public Airport(string airportName, string iata, string icao, ILogger logger)
+    public Airport(string airportName, string iata, string icao)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         
         ValidateConstructorParameters(airportName, iata, icao);
         AirportName = airportName;
         IATA = iata;
         ICAO = icao;
-        
-        _logger.Info($"Created Airport: {AirportName}");
+
     }
+    
+    public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
     
     private void ValidateConstructorParameters(string airportName, string iata, string icao)
     {
