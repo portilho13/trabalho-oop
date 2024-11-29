@@ -23,6 +23,8 @@ namespace trabalho_oop
         // Lazy initialization of the FMS singleton instance
         private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS());
 
+        private static ILogger _logger;
+
         // Singleton instance to provide global access
         public static FMS Instance => _instance.Value;
 
@@ -173,8 +175,10 @@ namespace trabalho_oop
         /// <summary>
         /// Initializes the FMS system by creating the main directory and its subdirectories.
         /// </summary>
-        public void Start()
+        public void Start(ILogger logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+            
             try
             {
                 // Creates the main folder if it doesn't exist
@@ -189,7 +193,7 @@ namespace trabalho_oop
                     CreateFolder(folder);
                 }
 
-                Console.WriteLine("FMS Started Successfully");
+                _logger.Info("FMS Started Successfully");
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
@@ -271,9 +275,12 @@ namespace trabalho_oop
                 {
                     File.Delete(flightPath);
                 }
+                
+                _logger.Info($"Flight {flight.Number} deleted");
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
+                _logger.Error($"Error deleting flight {flight.Number}");
                 throw new IOException($"Failed to delete flight file for number: {flight.Number}", ex);
             }
         }

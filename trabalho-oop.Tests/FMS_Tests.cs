@@ -37,7 +37,7 @@ namespace trabalho_oop.Tests
         public void TestStart_CreatesMainAndSubFolders()
         {
             // Act
-            _fms.Start();
+            _fms.Start(_logger);
 
             // Assert
             Assert.Multiple(() =>
@@ -72,7 +72,7 @@ namespace trabalho_oop.Tests
         public void WriteJsonToFile_ValidPath_CreatesFileWithContent()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             string testFilePath = Path.Combine(FMS.MainFolderPath, "test.json");
 
             // Act
@@ -91,7 +91,7 @@ namespace trabalho_oop.Tests
         public void ReadFromJson_ExistingFile_ReturnsContent()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             string testFilePath = Path.Combine(FMS.MainFolderPath, "test.json");
             File.WriteAllText(testFilePath, _testJsonContent);
 
@@ -118,7 +118,7 @@ namespace trabalho_oop.Tests
         public void DeleteAirplane_ExistingAirplane_RemovesFile()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             var airplane = new Airplane { Registration = "TEST123" };
             string airplanePath = Path.Combine(FMS.AirplaneFolderPath, "TEST123.json");
             File.WriteAllText(airplanePath, _testJsonContent);
@@ -135,7 +135,7 @@ namespace trabalho_oop.Tests
         public void DeleteFlight_ExistingFlight_RemovesFile()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             var flight = new Flight { Number = "FL123" };
             string flightPath = Path.Combine(FMS.FlightFolderPath, "FL123.json");
             File.WriteAllText(flightPath, _testJsonContent);
@@ -152,7 +152,7 @@ namespace trabalho_oop.Tests
         public void ReadAirplaneFromFolder_WithFiles_ReturnsFileArray()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             string testPath = Path.Combine(FMS.AirplaneFolderPath, "test.json");
             File.WriteAllText(testPath, _testJsonContent);
 
@@ -195,7 +195,7 @@ namespace trabalho_oop.Tests
         public void Save_ValidEntity_CreatesJsonFile()
         {
             // Arrange
-            _fms.Start();
+            _fms.Start(_logger);
             var mockEntity = new MockStorableEntity();
 
             // Act

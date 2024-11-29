@@ -31,7 +31,7 @@ namespace trabalho_oop
             try
             {
                 // Start the Flight Management System (FMS) to initialize necessary folders and files
-                FMS.Instance.Start(); // Initializes the file management system for the FMS
+                FMS.Instance.Start(logger); // Initializes the file management system for the FMS
 
                 // Create the session manager which manages user sessions
                 SessionManager sessionManager = new SessionManager(logger);
