@@ -4,15 +4,15 @@ namespace trabalho_oop;
 
 public class Airport: IStorable
 {
+    
+    private readonly ILogger _logger;
     public string AirportName { get; set; }
     public string IATA { get; set; }
     public string ICAO { get; set; }
-    
-    private ILogger _logger;
 
-
-    public Airport(string airportName, string iata, string icao)
+    public Airport(string airportName, string iata, string icao, ILogger logger)
     {
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         
         ValidateConstructorParameters(airportName, iata, icao);
         AirportName = airportName;
@@ -20,8 +20,6 @@ public class Airport: IStorable
         ICAO = icao;
 
     }
-    
-    public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
     
     private void ValidateConstructorParameters(string airportName, string iata, string icao)
     {

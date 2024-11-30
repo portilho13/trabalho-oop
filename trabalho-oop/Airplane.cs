@@ -40,8 +40,10 @@ namespace trabalho_oop
         /// <param name="capacity">Capacity of the airplane</param>
         /// <param name="model">Model of the airplane</param>
         /// <param name="logger">Logger instance to log information</param>
-        public Airplane(string company, string registration, int capacity, string model)
+        public Airplane(string company, string registration, int capacity, string model, ILogger logger)
         {
+            
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger),  "logger cannot be null");
             // Validate the constructor parameters before initializing
             ValidateConstructorParameters(company, registration, capacity, model);
 

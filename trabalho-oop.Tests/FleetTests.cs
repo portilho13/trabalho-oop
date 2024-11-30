@@ -23,7 +23,7 @@ namespace trabalho_oop.Tests
             var model = "Boeing 737";
 
             // Act
-            _testAirplane = new Airplane(company, registration, capacity, model);
+            _testAirplane = new Airplane(company, registration, capacity, model, _logger);
         }
 
         [Test]
@@ -49,7 +49,8 @@ namespace trabalho_oop.Tests
                 _testAirplane.Company,
                 _testAirplane.Registration,
                 _testAirplane.Capacity,
-                _testAirplane.Model
+                _testAirplane.Model, 
+                _logger
             );
 
             // Assert
