@@ -69,12 +69,12 @@ namespace trabalho_oop
                 fleet.LoadFleet(); // Load fleet details from storage
                 fleet.ShowAircraftList(); // Display the list of available aircraft
                 
-                /*// Create a new Airplane instance
-                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738");
+                // Create a new Airplane instance
+                Airplane ryanair = new Airplane("Ryanair", "EI-GSG", 186, "Boeing 738", logger);
                 FMS.Instance.Save(ryanair); // Save the airplane details to the FMS
                 
-                Airport Porto = new Airport("Francisco Sa Carneiro", "OPO", "LPPR");
-                Airport Milan = new Airport("Milan Malpensa", "MXP", "LIMC");
+                Airport Porto = new Airport("Francisco Sa Carneiro", "OPO", "LPPR", logger);
+                Airport Milan = new Airport("Milan Malpensa", "MXP", "LIMC", logger);
                 FMS.Instance.Save(Porto);
                 FMS.Instance.Save(Milan);
                 

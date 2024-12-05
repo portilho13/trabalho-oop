@@ -21,6 +21,9 @@ public class Airport: IStorable
 
     }
     
+    //For Deserealization
+    public Airport() {}
+    
     private void ValidateConstructorParameters(string airportName, string iata, string icao)
     {
         if (string.IsNullOrEmpty(airportName))

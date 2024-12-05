@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using Newtonsoft.Json;
 
 namespace trabalho_oop.Tests
 {
@@ -69,6 +70,15 @@ namespace trabalho_oop.Tests
             Assert.That(json, Does.Contain("\"Company\": \"Ryanair\""));
             Assert.That(json, Does.Contain("\"Registration\": \"RY12345\""));
             Assert.That(json, Does.Contain("\"Capacity\": 200"));
+        }
+
+        [Test]
+        public void JSONConvert_ValidAirplane()
+        {
+            Airplane testAirplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            string json = testAirplane.ConvertToJson();
+            Airplane airplane = JsonConvert.DeserializeObject<Airplane>(json);
+            Assert.That(airplane, Is.Not.Null);
         }
 
         [Test]
