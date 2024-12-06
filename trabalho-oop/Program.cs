@@ -80,7 +80,7 @@ namespace trabalho_oop
                 
                 // Create a new Flight instance with specific details
                 DateTime flightDateTime = new DateTime(2024, 12, 25, 15, 30, 0); // Set flight date and time
-                Flight flight = new Flight("RYR4704", Porto, Milan, ryanair, flightDateTime);
+                Flight flight = new Flight("RYR4704", Porto, Milan, ryanair, flightDateTime, logger);
                 flight.AddReservation(p); // Add the passenger reservation to the flight
                 FMS.Instance.Save(flight); // Save the flight details to the FMS*/
                 

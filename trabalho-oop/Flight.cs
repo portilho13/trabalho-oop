@@ -20,13 +20,12 @@ namespace trabalho_oop
     /// </summary>
     public class Flight : IStorable
     {
-        private ILogger _logger;  // Logger instance for flight-related logs
-
         public string Number { get; set; }  // The unique flight number (e.g., "AA123")
         public Airport Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
         public Airport Destination { get; private set; }  // The destination location of the flight (e.g., "Los Angeles")
         public Airplane Airplane { get; private set; }  // The airplane assigned to the flight
-        
+
+        private readonly ILogger _logger;
         public DateTime ScheduledDateTime { get; private set; }  // The date and time the flight is scheduled to depart
 
         public Dictionary<string, FlightReservation> PassengersReservations { get; private set; } =
@@ -152,9 +151,10 @@ namespace trabalho_oop
         /// <param name="airplane">The airplane assigned to the flight.</param>
         /// <param name="logger">A logger instance for logging flight-related activities.</param>
         /// <param name="scheduledDateTime">The scheduled date and time for the flight.</param>
-        public Flight(string number, Airport origin, Airport destination, Airplane airplane, DateTime scheduledDateTime)
+        public Flight(string number, Airport origin, Airport destination, Airplane airplane, DateTime scheduledDateTime, ILogger logger)
         {
             // Ensure the logger is not null
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
 
             // Validate the constructor parameters
             ValidateConstructorParameters(number, origin, destination, airplane);
@@ -175,8 +175,6 @@ namespace trabalho_oop
             PassengersReservations = p.GeneratePassengerList(GenerateRandomNumberOfPassengers());
             
         }
-        
-        public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         
         /// <summary>
         /// Validates the input parameters to ensure they are not null or empty.
@@ -216,5 +214,6 @@ namespace trabalho_oop
                 throw new InvalidOperationException("Unexpected error during parameter validation", ex);
             }
         }
+        
     }
 }

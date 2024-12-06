@@ -110,11 +110,9 @@ namespace trabalho_oop.Tests
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
-            Airplane a = new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737", _logger);
             // Arrange & Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                a.SetLogger(null));
-            
+            Assert.Throws<ArgumentNullException>(() => new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737", null));
+
         }
     }
 }

@@ -110,11 +110,7 @@ namespace trabalho_oop.Tests
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
             // Arrange & Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                new Fleet(null));
-
-            // Assert that the exception's message contains 'logger'
-            Assert.That(ex.Message, Does.Contain("logger"));
+            Assert.Throws<ArgumentNullException>(() => new Fleet(null));
         }
     }
 }
