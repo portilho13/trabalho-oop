@@ -18,6 +18,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Clean artifacts directory
+        run: rm -rf ./artifacts
+
       - name: Restore dependencies
         run: dotnet restore
 
@@ -26,6 +29,9 @@ jobs:
 
       - name: Publish artifact
         run: dotnet publish -c Release -o ./artifacts
+
+      - name: List artifacts directory contents
+        run: ls -R ./artifacts
 
       - name: Create release
         uses: actions/create-release@v1
@@ -36,4 +42,4 @@ jobs:
           release_name: Release-${{ github.run_number }}
           draft: false
           prerelease: false
-          files: ./artifacts/*
+          files: ./artifacts/**
