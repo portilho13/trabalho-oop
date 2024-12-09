@@ -70,33 +70,6 @@ namespace trabalho_oop
         /// <returns>Staff's unique staff code</returns>
         public string GetIdentifier() => staffCode;
 
-        /// <summary>
-        /// Generates a random 6-character staff code consisting of letters and numbers.
-        /// Handles errors in staff code generation and logs them.
-        /// </summary>
-        /// <returns>Generated staff code</returns>
-        private string GenerateStaffCode()
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var random = new Random();
-            var staffCode = new char[6];
-
-            // Generating the staff code by randomly selecting characters
-            for (int i = 0; i < staffCode.Length; i++)
-            {
-                staffCode[i] = chars[random.Next(chars.Length)];
-            }
-
-            string generatedCode = new string(staffCode);
-    
-            // Simple validation can be a direct throw
-            if (string.IsNullOrEmpty(generatedCode))
-            {
-                throw new InvalidOperationException("Generated staff code is empty");
-            }
-
-            return generatedCode;
-        }
 
         /// <summary>
         /// Hashes the provided password using SHA256 for secure storage.
@@ -160,7 +133,7 @@ namespace trabalho_oop
         public Staff(Logger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
-            staffCode = GenerateStaffCode();
+            staffCode = NumberGenerator.GenerateRandomNumber();
             _logger.Info($"New staff created with staff code: {staffCode}.");
         }
     }

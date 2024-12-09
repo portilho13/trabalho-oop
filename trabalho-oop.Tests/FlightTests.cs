@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace trabalho_oop.Tests
 {
     [TestFixture]
@@ -92,6 +94,14 @@ namespace trabalho_oop.Tests
                 logger: null,
                 scheduledDateTime: _flightDateTime
             ));
+        }
+
+        [Test]
+        public void JSONConvert_ValidFlight()
+        {
+            string json = _airplane.ConvertToJson();
+            Airplane testAirplane = JsonConvert.DeserializeObject<Airplane>(json);
+            Assert.That(testAirplane, Is.Not.Null);
         }
     }
 }
