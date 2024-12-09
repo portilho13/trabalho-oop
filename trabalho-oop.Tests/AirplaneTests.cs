@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using Newtonsoft.Json;
 
 namespace trabalho_oop.Tests
 {
@@ -24,7 +25,7 @@ namespace trabalho_oop.Tests
             var model = "Boeing 737";
 
             // Act
-            var airplane = new Airplane(company, registration, capacity, model);
+            var airplane = new Airplane(company, registration, capacity, model, _logger);
             airplane.SetLogger(_logger);
 
             // Assert
@@ -40,14 +41,14 @@ namespace trabalho_oop.Tests
         {
             // Arrange & Act & Assert
             var ex = Assert.Throws<ArgumentException>(() =>
-                new Airplane("", "RY12345", 200, "Boeing 737"));
+                new Airplane("", "RY12345", 200, "Boeing 737", _logger));
         }
 
         [Test]
         public void ChangeOccupiedStatus_TogglesStatus_LogsChange()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
 
             // Act
             airplane.ChangeOccupiedStatus();
@@ -60,7 +61,7 @@ namespace trabalho_oop.Tests
         public void ConvertToJson_ValidAirplane_ReturnsJsonString()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
 
             // Act
             var json = airplane.ConvertToJson();
@@ -72,10 +73,19 @@ namespace trabalho_oop.Tests
         }
 
         [Test]
+        public void JSONConvert_ValidAirplane()
+        {
+            Airplane testAirplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
+            string json = testAirplane.ConvertToJson();
+            Airplane airplane = JsonConvert.DeserializeObject<Airplane>(json);
+            Assert.That(airplane, Is.Not.Null);
+        }
+
+        [Test]
         public void GetIdentifier_ValidRegistration_ReturnsRegistration()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "EI-GSG", 200, "Boeing 737");
+            var airplane = new Airplane("Ryanair", "EI-GSG", 200, "Boeing 737", _logger);
 
             // Act
             var identifier = airplane.GetIdentifier();
@@ -88,7 +98,7 @@ namespace trabalho_oop.Tests
         public void GetEntityType_ReturnsAirplane()
         {
             // Arrange
-            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737");
+            var airplane = new Airplane("Ryanair", "RY12345", 200, "Boeing 737", _logger);
 
             // Act
             var entityType = airplane.GetEntityType();
@@ -100,11 +110,9 @@ namespace trabalho_oop.Tests
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
-            Airplane a = new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737");
             // Arrange & Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() =>
-                a.SetLogger(null));
-            
+            Assert.Throws<ArgumentNullException>(() => new Airplane("Ryanair", "EI-ABC", 200, "Boeing 737", null));
+
         }
     }
 }

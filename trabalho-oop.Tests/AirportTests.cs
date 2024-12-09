@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using Newtonsoft.Json;
 using trabalho_oop;
 
 namespace trabalho_oop.Tests
@@ -14,7 +15,7 @@ namespace trabalho_oop.Tests
         public void Setup()
         {
             _logger = new TestLogger();
-            _airport = new Airport("Lisbon Airport", "LIS", "LPPT");
+            _airport = new Airport("Lisbon Airport", "LIS", "LPPT", _logger);
         }
 
         [Test]
@@ -28,26 +29,34 @@ namespace trabalho_oop.Tests
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
-            Airport airport = new Airport("Lisbon Airport", "LIS", "LPPT");
-            Assert.Throws<ArgumentNullException>(() => airport.SetLogger(null));
+            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", "LPPT", null));
         }
 
         [Test]
         public void Constructor_EmptyAirportName_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("", "LIS", "LPPT"));
+            Assert.Throws<ArgumentNullException>(() => new Airport("", "LIS", "LPPT", _logger));
+        }
+
+        [Test]
+        public void JSONConvert_ValidAirport()
+        {
+            Airport testAirport = new Airport("Lisbon Airport", "LIS", "LPPT", _logger);
+            string json = testAirport.ConvertToJson();
+            Airport airport = JsonConvert.DeserializeObject<Airport>(json);
+            Assert.That(airport, Is.Not.Null);
         }
 
         [Test]
         public void Constructor_EmptyIATA_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "", "LPPT"));
+            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "", "LPPT", _logger));
         }
 
         [Test]
         public void Constructor_EmptyICAO_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", ""));
+            Assert.Throws<ArgumentNullException>(() => new Airport("Lisbon Airport", "LIS", "", _logger));
         }
 
         [Test]
