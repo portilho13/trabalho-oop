@@ -21,7 +21,7 @@ namespace trabalho_oop
     public class FMS
     {
         // Lazy initialization of the FMS singleton instance
-        private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS());
+        private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS(_logger));
 
         private static ILogger _logger;
 
@@ -51,7 +51,15 @@ namespace trabalho_oop
         };
 
         // Private constructor for singleton pattern
-        private FMS() { }
+        private FMS(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+        }
+
+        public static void InitializeLogger(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+        }
 
         /// <summary>
         /// Checks if a file exists at the given file path.

@@ -88,12 +88,14 @@ namespace trabalho_oop
         /// <summary>
         /// Displays the registration numbers of all airplanes in the fleet.
         /// </summary>
-        public void ShowAircraftList()
+        public List<String> GetAircraftList()
         {
+            List<String> aircraftList = new List<string>();
             foreach (Airplane airplane in _fleet.Values)
             {
-                Console.WriteLine(airplane.Registration);
+                aircraftList.Add(airplane.Registration);
             }
+            return aircraftList;
         }
 
         /// <summary>
