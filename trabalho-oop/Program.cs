@@ -55,6 +55,26 @@ namespace trabalho_oop
                 
                 return fleet;
             });
+            
+            builder.Services.AddSingleton<AirportList>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger>();
+                var fms = provider.GetRequiredService<FMS>();
+                
+                AirportList airports = new AirportList(logger);
+                
+                try 
+                {
+                    airports.LoadAirports();
+                    logger.Info("Airports loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Error loading fleet: {ex.Message}");
+                }
+                
+                return airports;
+            });
 
             var app = builder.Build();
 
