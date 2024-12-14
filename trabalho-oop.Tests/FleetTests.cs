@@ -33,7 +33,7 @@ namespace trabalho_oop.Tests
             _fleet.AddAirplane(_testAirplane);
 
             // Assert
-            Assert.AreEqual(_testAirplane, _fleet.GetAirplane("EI-ABC"));
+            Assert.That(_testAirplane, Is.EqualTo(_fleet.GetAirplane("EI-ABC")));
             Assert.That(_logger.LoggedMessages, 
                 Does.Contain("INFO: Airplane EI-ABC added to fleet."));
         }

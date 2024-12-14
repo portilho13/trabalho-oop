@@ -42,10 +42,18 @@ namespace trabalho_oop
         /// </summary>
         /// <param name="registration">The registration of the airplane to retrieve.</param>
         /// <returns>The airplane corresponding to the given registration.</returns>
-        public Airplane GetAirplane(string registration)
+        public Airplane? GetAirplane(string registration)
         {
-            return _fleet[registration];
+            if (_fleet.TryGetValue(registration, out var airplane))
+            {
+                return airplane;
+            }
+
+            return null; // Return null if the registration does not exist
         }
+
+        
+
 
         /// <summary>
         /// Adds a new airplane to the fleet.
@@ -88,7 +96,7 @@ namespace trabalho_oop
         /// <summary>
         /// Displays the registration numbers of all airplanes in the fleet.
         /// </summary>
-        public List<String> GetAircraftList()
+        public List<String> GetAirplaneRegistrations()
         {
             List<String> aircraftList = new List<string>();
             foreach (Airplane airplane in _fleet.Values)
