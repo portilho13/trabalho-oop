@@ -18,12 +18,9 @@ namespace trabalho_oop
             // Register the Logger as both ILogger and Logger
             builder.Services.AddSingleton<ILogger>(provider => new Logger("./fms/logs/app.log"));
             builder.Services.AddSingleton<Logger>(provider => (Logger)provider.GetRequiredService<ILogger>());
-
-            builder.Services.AddSingleton<SessionManager>();
             builder.Services.AddSingleton<FMS>(provider =>
             {
                 var logger = provider.GetRequiredService<Logger>();
-    
                 // If the instance hasn't been created yet, this will use the logger
                 FMS.InitializeLogger(logger);
     
@@ -40,7 +37,6 @@ namespace trabalho_oop
             {
                 var logger = provider.GetRequiredService<ILogger>();
                 var fms = provider.GetRequiredService<FMS>();
-                
                 Fleet fleet = new Fleet(logger);
                 
                 try 
@@ -60,7 +56,6 @@ namespace trabalho_oop
             {
                 var logger = provider.GetRequiredService<ILogger>();
                 var fms = provider.GetRequiredService<FMS>();
-                
                 AirportList airports = new AirportList(logger);
                 
                 try 
@@ -74,6 +69,25 @@ namespace trabalho_oop
                 }
                 
                 return airports;
+            });
+
+            builder.Services.AddSingleton<SessionManager>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger>();
+                var fms = provider.GetRequiredService<FMS>();
+                SessionManager sessionManager = new SessionManager(logger);
+                
+                try 
+                {
+                    sessionManager.Load();
+                    logger.Info("Sessions loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Error loading sessions: {ex.Message}");
+                }
+                
+                return sessionManager;
             });
 
             var app = builder.Build();

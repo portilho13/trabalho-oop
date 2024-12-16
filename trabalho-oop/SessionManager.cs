@@ -30,13 +30,13 @@ namespace trabalho_oop
         private readonly List<Passenger> _passengers;
 
         // Logger instance for logging events
-        private readonly Logger _logger;
+        private static ILogger _logger;
 
         /// <summary>
         /// Initializes the SessionManager with empty lists for staff and passengers
         /// and a logger to log all activities.
         /// </summary>
-        public SessionManager(Logger logger)
+        public SessionManager(ILogger logger)
         {
             try
             {
@@ -56,13 +56,13 @@ namespace trabalho_oop
         /// Handles the staff login process by verifying staff credentials (staff code and password).
         /// Creates a new session if the login is successful.
         /// </summary>
-        public bool LoginStaff(string staffCode, string password)
+        public bool LoginStaff(string email, string password)
         {
             try
             {
                 // Validate inputs
-                if (string.IsNullOrWhiteSpace(staffCode))
-                    throw new ArgumentException("Staff code cannot be empty", nameof(staffCode));
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("Staff code cannot be empty", nameof(email));
 
                 if (string.IsNullOrWhiteSpace(password))
                     throw new ArgumentException("Password cannot be empty", nameof(password));
@@ -72,7 +72,7 @@ namespace trabalho_oop
 
                 // Hash the password and attempt to find the staff member with the provided credentials
                 string hashedPassword = CreateHashPassword(password);
-                Staff staff = _staff.Find(s => s.staffCode == staffCode && s.password == hashedPassword);
+                Staff staff = _staff.Find(s => s.Email == email && s.password == hashedPassword);
 
                 // If staff found, create session and log the success
                 if (staff != null)
@@ -83,7 +83,7 @@ namespace trabalho_oop
                 }
 
                 // If no staff found, log the failed login attempt
-                _logger.Warn($"Staff login failed: Invalid credentials for {staffCode}");
+                _logger.Warn($"Staff login failed: Invalid credentials for {email}");
                 return false;
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)

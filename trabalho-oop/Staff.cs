@@ -23,8 +23,7 @@ namespace trabalho_oop
     public class Staff : Person, IStorable
     {
         // Logger instance for logging activities related to staff
-        private static Logger _logger;
-
+        private static ILogger _logger;
         // The unique staff code assigned to the staff member
         public string staffCode { get; set; }
 
@@ -130,11 +129,13 @@ namespace trabalho_oop
         /// Constructor for the Staff class that initializes the staff code and logs the creation event.
         /// Handles errors during object creation and logs them.
         /// </summary>
-        public Staff(Logger logger)
+        public Staff(ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
             staffCode = NumberGenerator.GenerateRandomNumber();
             _logger.Info($"New staff created with staff code: {staffCode}.");
         }
+        
+        public Staff() {}
     }
 }

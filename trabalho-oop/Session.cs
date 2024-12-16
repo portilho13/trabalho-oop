@@ -22,7 +22,7 @@ namespace trabalho_oop
         private Person _loggedInPerson;
 
         // Logger instance for logging session activities
-        private readonly Logger _logger;
+        private static ILogger _logger;
 
         /// <summary>
         /// The logged-in person for this session.
@@ -57,7 +57,7 @@ namespace trabalho_oop
         /// </summary>
         /// <param name="person">The person to be logged in for this session.</param>
         /// <param name="logger">Logger for session-related activities.</param>
-        public Session(Person person, Logger logger)
+        public Session(Person person, ILogger logger)
         {
             // Check if the person parameter is null and throw an exception if so
             if (person == null)
