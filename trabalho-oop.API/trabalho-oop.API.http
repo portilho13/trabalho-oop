@@ -1,6 +1,0 @@
-@trabalho_oop.API_HostAddress = http://localhost:5044
-
-GET {{trabalho_oop.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

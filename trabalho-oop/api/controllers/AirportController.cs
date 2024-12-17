@@ -18,7 +18,15 @@ public class AirportController : ControllerBase
     public IActionResult GetAirports()
     {
         var aircraftList = _airports.GetAirportsICAO();
-        return Ok(aircraftList);
+        List<Airport> airports = new List<Airport>();
+        foreach (var airport in aircraftList)
+        {
+            var airportInfo = _airports.GetAirport(airport);
+            airports.Add(airportInfo);
+        }
+
+
+        return Ok(airports);
     }
 
     // GET api/airport/{icao}
@@ -59,4 +67,12 @@ public class AirportController : ControllerBase
         // Correctly map the route parameter
         return CreatedAtAction(nameof(GetAirportByIcao), new { icao = airport.ICAO }, airport);
     }
+
+    [HttpDelete("{icao}")]
+    public IActionResult DeleteAirport(string icao)
+    {
+        _airports.RemoveAirport(icao);
+        return Ok(new { Message = "Airport deleted." });
+    }
+    
 }

@@ -15,21 +15,33 @@ namespace trabalho_oop
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
 
+            // Add CORS services and configure policies
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // Replace with your frontend's URL
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
             // Register the Logger as both ILogger and Logger
             builder.Services.AddSingleton<ILogger>(provider => new Logger("./fms/logs/app.log"));
             builder.Services.AddSingleton<Logger>(provider => (Logger)provider.GetRequiredService<ILogger>());
             builder.Services.AddSingleton<FMS>(provider =>
             {
                 var logger = provider.GetRequiredService<Logger>();
-                // If the instance hasn't been created yet, this will use the logger
                 FMS.InitializeLogger(logger);
-    
-                // Get the singleton instance
                 var fms = FMS.Instance;
-    
-                // Start the FMS system
                 fms.Start(logger);
-    
                 return fms;
             });
 
@@ -38,7 +50,7 @@ namespace trabalho_oop
                 var logger = provider.GetRequiredService<ILogger>();
                 var fms = provider.GetRequiredService<FMS>();
                 Fleet fleet = new Fleet(logger);
-                
+
                 try 
                 {
                     fleet.LoadFleet();
@@ -48,16 +60,16 @@ namespace trabalho_oop
                 {
                     logger.Error($"Error loading fleet: {ex.Message}");
                 }
-                
+
                 return fleet;
             });
-            
+
             builder.Services.AddSingleton<AirportList>(provider =>
             {
                 var logger = provider.GetRequiredService<ILogger>();
                 var fms = provider.GetRequiredService<FMS>();
                 AirportList airports = new AirportList(logger);
-                
+
                 try 
                 {
                     airports.LoadAirports();
@@ -67,7 +79,7 @@ namespace trabalho_oop
                 {
                     logger.Error($"Error loading fleet: {ex.Message}");
                 }
-                
+
                 return airports;
             });
 
@@ -76,7 +88,7 @@ namespace trabalho_oop
                 var logger = provider.GetRequiredService<ILogger>();
                 var fms = provider.GetRequiredService<FMS>();
                 SessionManager sessionManager = new SessionManager(logger);
-                
+
                 try 
                 {
                     sessionManager.Load();
@@ -86,13 +98,19 @@ namespace trabalho_oop
                 {
                     logger.Error($"Error loading sessions: {ex.Message}");
                 }
-                
+
                 return sessionManager;
             });
 
             var app = builder.Build();
 
+            // Enable routing
             app.UseRouting();
+
+            // Enable CORS middleware
+            app.UseCors("AllowSpecificOrigins"); // Apply specific CORS policy
+
+            // Enable authorization
             app.UseAuthorization();
 
             // Map API controllers
