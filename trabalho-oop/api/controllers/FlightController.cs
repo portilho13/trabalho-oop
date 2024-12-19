@@ -59,4 +59,11 @@ public class FlightController: ControllerBase
         _flightList.DeleteFlight(flightNumber);
         return Ok(new { message = $"Flight {flightNumber} deleted successfully." });
     }
+
+
+    [HttpGet("{flightNumber}")]
+    public IActionResult GetFlight(string flightNumber)
+    {
+        return Ok(_flightList.GetFlight(flightNumber));
+    }
 }
