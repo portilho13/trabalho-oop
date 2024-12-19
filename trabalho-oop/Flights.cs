@@ -87,6 +87,16 @@ namespace trabalho_oop
         {
             return _flights[flightNumber];
         }
+        
+        public List<String> GetFlights()
+        {
+            List<String> flightsList = new List<string>();
+            foreach (Flight flight in _flights.Values)
+            {
+                flightsList.Add(flight.Number);
+            }
+            return flightsList;
+        }
 
         /// <summary>
         /// Deletes a flight by its flight number.

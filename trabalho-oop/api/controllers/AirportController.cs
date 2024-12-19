@@ -10,7 +10,7 @@ public class AirportController : ControllerBase
 
     public AirportController(AirportList airportList)
     {
-        _airports = airportList;
+        _airports = airportList ?? throw new ArgumentNullException(nameof(airportList), "airportList is null.");
     }
 
     // GET api/airport

@@ -42,6 +42,7 @@ namespace trabalho_oop
                 FMS.InitializeLogger(logger);
                 var fms = FMS.Instance;
                 fms.Start(logger);
+                
                 return fms;
             });
 
@@ -62,6 +63,26 @@ namespace trabalho_oop
                 }
 
                 return fleet;
+            });
+
+            builder.Services.AddSingleton<Flights>(provider =>
+            {
+                var logger = provider.GetRequiredService<ILogger>();
+                var fms = provider.GetRequiredService<FMS>();
+                
+                Flights flights = new Flights(logger);
+
+                try
+                {
+                    flights.LoadFlights();
+                    logger.Info("Flight loaded successfully");
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"Error loading flights: {ex.Message}");
+                }
+
+                return flights;
             });
 
             builder.Services.AddSingleton<AirportList>(provider =>
@@ -118,6 +139,9 @@ namespace trabalho_oop
 
             // Initialize the backend and run the web app
             app.Run();
+
+
+            
         }
     }
 }

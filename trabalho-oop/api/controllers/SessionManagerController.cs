@@ -12,7 +12,7 @@ namespace trabalho_oop.api.controllers
 
         public SessionManagerController(SessionManager sessionManager)
         {
-            _sessionManager = sessionManager;
+            _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager), "Session manager is null");
         }
 
         /// <summary>

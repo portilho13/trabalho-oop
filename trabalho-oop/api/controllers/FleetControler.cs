@@ -11,7 +11,7 @@ public class FleetController : ControllerBase
 
     public FleetController(Fleet fleet)
     {
-        _fleet = fleet;
+        _fleet = fleet ?? throw new ArgumentNullException(nameof(fleet), "Fleet is null.");
     }
 
     // GET api/fleet
@@ -19,7 +19,13 @@ public class FleetController : ControllerBase
     public IActionResult GetFleet()
     {
         var aircraftList = _fleet.GetAirplaneRegistrations();
-        return Ok(aircraftList);
+        List<Airplane> airplaneList = new List<Airplane>();
+        foreach (var aircraft in aircraftList)
+        {
+            Airplane airplane = _fleet.GetAirplane(aircraft);
+            airplaneList.Add(airplane);
+        }
+        return Ok(airplaneList);
     }
     
     [HttpGet("{registration}")]
@@ -57,6 +63,12 @@ public class FleetController : ControllerBase
 
         return CreatedAtAction(nameof(GetAirplaneByRegistration), new { registration = airplane.Registration }, airplane);
     }
-
+    
+    [HttpDelete("{registration}")]
+    public IActionResult DeleteAirplane(string registration)
+    {
+        _fleet.RemoveAirplane(registration);
+        return Ok(new { Message = "Airplane deleted." });
+    }
     
 }
