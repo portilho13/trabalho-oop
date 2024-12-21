@@ -1,10 +1,10 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Flights.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
 //    <date>15-11-2024</date>
 //    <time>17:00</time>
-//    <version>0.1</version>
+//    <version>1.0</version>
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
 
@@ -17,11 +17,17 @@ namespace trabalho_oop
     /// </summary>
     public class Flights
     {
+        #region Fields and Properties
+
         // Dictionary to store flights with the flight number as the key and Flight object as the value
         private Dictionary<string, Flight> _flights = new Dictionary<string, Flight>();
 
         // Logger instance to log actions performed on the flights
         private readonly ILogger _logger;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Constructor for initializing the Flights collection with a logger.
@@ -31,13 +37,21 @@ namespace trabalho_oop
         {
             _logger = logger;
         }
-        
+
+        #endregion
+
+        #region Private Methods
+
         /// <summary>
         /// Checks if a flight with the given flight number already exists in the collection.
         /// </summary>
         /// <param name="flightNumber">The flight number to check.</param>
         /// <returns>True if the flight exists, otherwise false.</returns>
         private bool DoesFlightExist(string flightNumber) => _flights.ContainsKey(flightNumber);
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a new flight to the collection if it doesn't already exist.
@@ -89,6 +103,19 @@ namespace trabalho_oop
         }
 
         /// <summary>
+        /// Returns a list of all flight numbers in the collection.
+        /// </summary>
+        public List<string> GetFlights()
+        {
+            List<string> flightsList = new List<string>();
+            foreach (Flight flight in _flights.Values)
+            {
+                flightsList.Add(flight.Number);
+            }
+            return flightsList;
+        }
+
+        /// <summary>
         /// Deletes a flight by its flight number.
         /// </summary>
         /// <param name="flightNumber">The flight number of the flight to delete.</param>
@@ -118,5 +145,7 @@ namespace trabalho_oop
                 Console.WriteLine(flight.Number);
             }
         }
+
+        #endregion
     }
 }

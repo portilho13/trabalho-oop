@@ -1,50 +1,75 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Passenger.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
 //    <date>15-11-2024</date>
 //    <time>17:00</time>
-//    <version>0.1</version>
+//    <version>1.0</version>
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace trabalho_oop
 {
+    #region Class Documentation
+
     /// <summary>
     /// Represents a passenger who can make reservations and be serialized to JSON.
     /// Inherits from Person and implements the IStorable interface.
     /// </summary>
     public class Passenger : Person, IStorable
     {
-        // Fields
+        #endregion
+
+        #region Fields
+
+        // Fields for passenger properties
         public string Password { get; set; }
         public string Id { get; set; }
-        
+
         // Logger instance to log actions performed by the passenger
         [NonSerialized] // Prevents the logger from being serialized
         private readonly ILogger _logger;
-        
+
         // Collection of reservations made by the passenger
         public Dictionary<string, PassengerReservation> Reservations { get; set; } = new Dictionary<string, PassengerReservation>();
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Constructor to create a new passenger with a unique identifier.
         /// </summary>
-        public Passenger(string name, string email, string password)
+        public Passenger(string name, string email, string password, ILogger logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
             ValidateConstructorParameters(name, email, password);
             Name = name;
             Email = email;
-            Password = password;
+            Console.WriteLine("Password on class: " + password);
+            Password = PasswordUtility.HashPassword(password);
             Id = NumberGenerator.GenerateRandomNumber(); // Generate a unique passenger ID
+            _logger.Info($"New passenger created with id: {Id}.");
         }
-        
+
+        /// <summary>
+        /// Parameterless constructor needed for deserialization (e.g., JSON deserialization).
+        /// </summary>
+        public Passenger()
+        {
+        }
+
+        #endregion
+
+        #region Validation Methods
+
+        /// <summary>
+        /// Validates the constructor parameters for name, email, and password.
+        /// </summary>
         private void ValidateConstructorParameters(string name, string email, string password)
         {
             // Ensure company is not empty or whitespace
@@ -60,12 +85,9 @@ namespace trabalho_oop
                 throw new ArgumentException("Password cannot be empty or whitespace.", nameof(password));
         }
 
-        /// <summary>
-        /// Parameterless constructor needed for deserialization (e.g., JSON deserialization).
-        /// </summary>
-        public Passenger()
-        {
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Returns the unique identifier for the passenger.
@@ -105,6 +127,10 @@ namespace trabalho_oop
         /// <returns>The entity type for a passenger.</returns>
         public EntityType GetEntityType() => EntityType.Passenger;
 
+        #endregion
+
+        #region Reservation Methods
+
         // Private helper method to check if a reservation already exists
         private bool DoesReservationExists(string reservationCode) => Reservations.ContainsKey(reservationCode);
 
@@ -120,6 +146,9 @@ namespace trabalho_oop
                 Reservations.Add(reservation.ReservationCode, reservation);
         }
 
+        /// <summary>
+        /// Displays the passenger's reservation codes.
+        /// </summary>
         public void ShowReservations()
         {
             foreach (PassengerReservation p in Reservations.Values)
@@ -127,5 +156,7 @@ namespace trabalho_oop
                 Console.WriteLine(p.ReservationCode);
             }
         }
+
+        #endregion
     }
 }

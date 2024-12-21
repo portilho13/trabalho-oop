@@ -1,23 +1,33 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="PassengerList.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
 //    <date>15-11-2024</date>
 //    <time>17:00</time>
-//    <version>0.1</version>
+//    <version>1.0</version>
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
+
 namespace trabalho_oop
 {
+    #region Class Documentation
+
     /// <summary>
     /// Represents a list of passengers, capable of generating random passengers and assigning reservations.
     /// </summary>
     public class PassengerList
     {
+        #endregion
+
+        #region Fields
+
         // Fields to hold passenger names and surnames, fetched from FMS instance
         private List<string> _passengerNames = FMS.Instance.GetPassengerNames();
         private List<string> _passengerSurnames = FMS.Instance.GetPassengerSurnames();
-        
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Generates a random passenger name by selecting a random name and surname from predefined lists.
@@ -49,7 +59,11 @@ namespace trabalho_oop
             // Return the generated passenger name
             return passenger;
         }
-        
+
+        #endregion
+
+        #region Public Methods
+
         /// <summary>
         /// Generates a list of passengers with assigned reservations.
         /// </summary>
@@ -92,5 +106,7 @@ namespace trabalho_oop
             // Return the list of generated passengers and their reservations
             return passengersReservatonList;
         }
+
+        #endregion
     }
 }

@@ -1,10 +1,10 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="FMS.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
 //    <date>15-11-2024</date>
 //    <time>17:00</time>
-//    <version>0.1</version>
+//    <version>1.0</version>
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
 
@@ -20,14 +20,60 @@ namespace trabalho_oop
     /// </summary>
     public class FMS
     {
+        #region Properties
+        
         // Lazy initialization of the FMS singleton instance
-        private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS());
+        private static readonly Lazy<FMS> _instance = new Lazy<FMS>(() => new FMS(_logger));
 
         private static ILogger _logger;
 
         // Singleton instance to provide global access
         public static FMS Instance => _instance.Value;
+        
+        // Private constructor for singleton pattern
+        private FMS(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+        }
 
+        public static void InitializeLogger(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+        }
+        
+        /// <summary>
+        /// Initializes the FMS system by creating the main directory and its subdirectories.
+        /// </summary>
+        public void Start(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+            
+            try
+            {
+                // Creates the main folder if it doesn't exist
+                if (!Directory.Exists(MainFolderPath))
+                {
+                    Directory.CreateDirectory(MainFolderPath);
+                }
+
+                // Creates the subdirectories for flights, aircraft, staff, and passengers
+                foreach (string folder in Folders)
+                {
+                    CreateFolder(folder);
+                }
+
+                _logger.Info("FMS Started Successfully");
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                throw new InvalidOperationException("Failed to initialize FMS system", ex);
+            }
+        }
+        
+        #endregion
+
+        #region Defining Paths
+        
         // Paths for the main folders related to flights, aircraft, staff, and passengers
         public static readonly string MainFolderPath = "./fms"; // Default path for FMS
         public static readonly string FlightFolderPath = Path.Combine(MainFolderPath, "flights");
@@ -39,6 +85,10 @@ namespace trabalho_oop
         // File names for storing names and surnames
         private readonly string NamesFile = "../../../nomes.txt";
         private readonly string SurnamesFile = "../../../apelidos.txt";
+        
+        #endregion
+        
+        #region Creating Default Folders
 
         // List of folders to be created within the FMS directory
         private List<string> Folders = new List<string>
@@ -49,9 +99,11 @@ namespace trabalho_oop
             PassengerFolderPath,
             AirportFolderPath,
         };
-
-        // Private constructor for singleton pattern
-        private FMS() { }
+        
+        #endregion
+        
+        #region General Functions
+        
 
         /// <summary>
         /// Checks if a file exists at the given file path.
@@ -84,22 +136,6 @@ namespace trabalho_oop
             catch (Exception ex) when (ex is ArgumentException || ex is PathTooLongException)
             {
                 throw new ArgumentException($"Invalid folder path: {filePath}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Converts the current instance of the FMS object to a JSON string.
-        /// </summary>
-        /// <returns>The JSON string representing the FMS object.</returns>
-        private string ConvertToJson()
-        {
-            try
-            {
-                return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-            }
-            catch (JsonException ex)
-            {
-                throw new JsonException("Failed to serialize object to JSON", ex);
             }
         }
 
@@ -169,35 +205,6 @@ namespace trabalho_oop
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 throw new IOException($"Failed to create folder: {foldername}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Initializes the FMS system by creating the main directory and its subdirectories.
-        /// </summary>
-        public void Start(ILogger logger)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
-            
-            try
-            {
-                // Creates the main folder if it doesn't exist
-                if (!Directory.Exists(MainFolderPath))
-                {
-                    Directory.CreateDirectory(MainFolderPath);
-                }
-
-                // Creates the subdirectories for flights, aircraft, staff, and passengers
-                foreach (string folder in Folders)
-                {
-                    CreateFolder(folder);
-                }
-
-                _logger.Info("FMS Started Successfully");
-            }
-            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-            {
-                throw new InvalidOperationException("Failed to initialize FMS system", ex);
             }
         }
 
@@ -483,5 +490,7 @@ namespace trabalho_oop
                 throw new InvalidOperationException($"Failed to save entity {entity.GetEntityType()}", ex);
             }
         }
+        
+        #endregion
     }
 }
