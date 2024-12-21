@@ -60,8 +60,14 @@ namespace trabalho_oop.Tests
                 Name = "Port",
                 Email = "port@gmail.com",
             };
-            _flight.AddReservation(passenger);
+            string reservationCode = _flight.AddReservation("Port");
             // Act
+            PassengerReservation p = new PassengerReservation()
+            {
+                FlightNumber = _flight.Number,
+                ReservationCode = reservationCode,
+            };    
+            passenger.AddReservation(p);
             var firstReservation = passenger.Reservations.First(); // Get the first reservation
             bool reservationExists = _flight.PassengersReservations.ContainsKey(firstReservation.Key);
             // Assert

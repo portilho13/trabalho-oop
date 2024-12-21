@@ -62,6 +62,7 @@ namespace trabalho_oop
         /// <param name="airplane">The airplane to add to the fleet.</param>
         public void AddAirplane(Airplane airplane)
         {
+            if (airplane == null) throw new ArgumentNullException(nameof(airplane));
             if (DoesPlaneExist(airplane.Registration))
             {
                 throw new InvalidOperationException($"An airplane with registration {airplane.Registration} already exists.");
@@ -115,6 +116,7 @@ namespace trabalho_oop
         {
             // Retrieves the airplane to be removed
             Airplane airplane = GetAirplane(registration);
+            if (airplane == null) throw new KeyNotFoundException($"The airplane with registration {registration} does not exist.");
 
             // Deletes the airplane data from the FMS system
             FMS.Instance.DeleteAirplane(airplane);

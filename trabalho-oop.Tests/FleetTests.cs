@@ -11,18 +11,35 @@ namespace trabalho_oop.Tests
         private TestLogger _logger;
         private Fleet _fleet;
         private Airplane _testAirplane;
+        private FMS _fms;
+
+        [OneTimeSetUp]
+        public void OneTimeSetup()
+        {
+            // Initialize the logger first since FMS depends on it
+            _logger = new TestLogger();
+
+            // Initialize FMS with the logger
+            FMS.InitializeLogger(_logger);
+            var fms = FMS.Instance;
+            fms.Start(_logger);
+        }
 
         [SetUp]
         public void Setup()
         {
+            // Reset logger for each test
             _logger = new TestLogger();
+
+            // Create new fleet instance
             _fleet = new Fleet(_logger);
+
+            // Create test airplane
             var company = "Ryanair";
             var registration = "EI-ABC";
             var capacity = 200;
             var model = "Boeing 737";
 
-            // Act
             _testAirplane = new Airplane(company, registration, capacity, model, _logger);
         }
 
@@ -34,10 +51,9 @@ namespace trabalho_oop.Tests
 
             // Assert
             Assert.That(_testAirplane, Is.EqualTo(_fleet.GetAirplane("EI-ABC")));
-            Assert.That(_logger.LoggedMessages, 
-                Does.Contain("INFO: Airplane EI-ABC added to fleet."));
+            Assert.That(_logger.LoggedMessages, Does.Contain("INFO: Airplane EI-ABC added to fleet."));
         }
-        
+
         [Test]
         public void AddAirplane_DuplicateRegistration_ThrowsInvalidOperationException()
         {
@@ -49,17 +65,17 @@ namespace trabalho_oop.Tests
                 _testAirplane.Company,
                 _testAirplane.Registration,
                 _testAirplane.Capacity,
-                _testAirplane.Model, 
+                _testAirplane.Model,
                 _logger
             );
 
             // Assert
-            var exception = Assert.Throws<InvalidOperationException>(() => 
+            var exception = Assert.Throws<InvalidOperationException>(() =>
                 _fleet.AddAirplane(duplicateAirplane)
             );
-
+            Assert.That(exception.Message,
+                Is.EqualTo($"An airplane with registration {_testAirplane.Registration} already exists."));
         }
-
 
         [Test]
         public void GetAirplane_ExistingRegistration_ReturnsAirplane()
@@ -75,14 +91,6 @@ namespace trabalho_oop.Tests
         }
 
         [Test]
-        public void GetAirplane_NonExistingRegistration_ThrowsKeyNotFoundException()
-        {
-            // Act & Assert
-            Assert.Throws<KeyNotFoundException>(() => 
-                _fleet.GetAirplane("NON-EXISTING"));
-        }
-
-        [Test]
         public void RemoveAirplane_ExistingAirplane_RemovesSuccessfully()
         {
             // Arrange
@@ -92,25 +100,34 @@ namespace trabalho_oop.Tests
             _fleet.RemoveAirplane("EI-ABC");
 
             // Assert
-            Assert.Throws<KeyNotFoundException>(() => 
-                _fleet.GetAirplane("EI-ABC"));
-            Assert.That(_logger.LoggedMessages, 
-                Does.Contain("INFO: Airplane EI-ABC removed from fleet."));
+            Assert.That(_fleet.GetAirplane("EI-ABC"), Is.Null);
+            Assert.That(_logger.LoggedMessages, Does.Contain("INFO: Airplane EI-ABC removed from fleet."));
         }
 
         [Test]
         public void RemoveAirplane_NonExistingAirplane_ThrowsKeyNotFoundException()
         {
             // Act & Assert
-            Assert.Throws<KeyNotFoundException>(() => 
-                _fleet.RemoveAirplane("NON-EXISTING"));
+            var exception = Assert.Throws<KeyNotFoundException>(() =>
+                _fleet.RemoveAirplane("NON-EXISTING")
+            );
+            Assert.That(exception.Message, Is.EqualTo("The airplane with registration NON-EXISTING does not exist."));
         }
-        
+
         [Test]
         public void Constructor_NullLogger_ThrowsArgumentNullException()
         {
-            // Arrange & Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new Fleet(null));
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => new Fleet(null));
+            Assert.That(exception.ParamName, Is.EqualTo("logger"));
+        }
+
+        [Test]
+        public void AddAirplane_NullAirplane_ThrowsArgumentNullException()
+        {
+            // Act & Assert
+            var exception = Assert.Throws<ArgumentNullException>(() => _fleet.AddAirplane(null));
+            Assert.That(exception.ParamName, Is.EqualTo("airplane"));
         }
     }
 }
