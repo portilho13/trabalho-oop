@@ -14,6 +14,8 @@ using System.Text.Json;
 
 namespace trabalho_oop
 {
+    #region Class Documentation
+
     /// <summary>
     /// The Staff class represents a staff member in the system, handling
     /// their personal details, staff code, and password. It also provides
@@ -22,14 +24,23 @@ namespace trabalho_oop
     /// </summary>
     public class Staff : Person, IStorable
     {
+        #endregion
+
+        #region Fields
+
         // Logger instance for logging activities related to staff
         [NonSerialized]
         private static ILogger _logger;
+
         // The unique staff code assigned to the staff member
         public string StaffCode { get; set; }
 
         // The hashed password for the staff member
         public string Password { get; set; }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Converts the Staff object to a JSON string for serialization.
@@ -57,21 +68,28 @@ namespace trabalho_oop
                 throw;
             }
         }
-        
+
+        /// <summary>
+        /// Validates the constructor parameters to ensure they are non-empty and valid.
+        /// </summary>
         private void ValidateConstructorParameters(string name, string email, string password)
         {
-            // Ensure company is not empty or whitespace
+            // Ensure name is not empty or whitespace
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Name cannot be empty or whitespace.", nameof(name));
 
-            // Ensure registration is not empty or whitespace and within valid length
+            // Ensure email is not empty or whitespace
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
 
-            // Ensure model is not empty or whitespace
+            // Ensure password is not empty or whitespace
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Password cannot be empty or whitespace.", nameof(password));
         }
+
+        #endregion
+
+        #region Entity Methods
 
         /// <summary>
         /// Returns the entity type for the staff, which is 'Staff'.
@@ -85,9 +103,13 @@ namespace trabalho_oop
         /// <returns>Staff's unique staff code</returns>
         public string GetIdentifier() => StaffCode;
 
+        #endregion
+
+        #region Constructor
+
         /// <summary>
-        /// Constructor for the Staff class that initializes the staff code and logs the creation event.
-        /// Handles errors during object creation and logs them.
+        /// Constructor for the Staff class that initializes the staff code, hashes the password,
+        /// and logs the creation event. Handles errors during object creation and logs them.
         /// </summary>
         public Staff(string name, string email, string password, ILogger logger)
         {
@@ -99,7 +121,9 @@ namespace trabalho_oop
             StaffCode = NumberGenerator.GenerateRandomNumber();
             _logger.Info($"New staff created with staff code: {StaffCode}.");
         }
-        
-        public Staff() {}
+
+        public Staff() { }
+
+        #endregion
     }
 }

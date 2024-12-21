@@ -12,17 +12,27 @@ namespace trabalho_oop
 {
     using System;
 
+    #region Class Documentation
+
     /// <summary>
     /// The Session class manages the session state for a logged-in person. 
     /// It keeps track of the logged-in user and the session's creation time.
     /// </summary>
     public class Session
     {
+        #endregion
+
+        #region Fields
+
         // The private field holding the logged-in person
         private Person _loggedInPerson;
 
         // Logger instance for logging session activities
         private static ILogger _logger;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The logged-in person for this session.
@@ -51,6 +61,10 @@ namespace trabalho_oop
         /// </summary>
         public DateTime CreatedAt { get; private set; }
 
+        #endregion
+
+        #region Constructor
+
         /// <summary>
         /// Initializes a new session for a given person.
         /// This constructor logs the creation of the session and sets up the session time.
@@ -75,7 +89,11 @@ namespace trabalho_oop
             // Log the session creation
             _logger.Info($"Session created for person: {person.GetType().Name}");
         }
-        
+
+        #endregion
+
+        #region Destructor
+
         /// <summary>
         /// Destructor for the Session class.
         /// Logs when a session is being destroyed (when the object is being garbage collected).
@@ -96,5 +114,7 @@ namespace trabalho_oop
                 Console.Error.WriteLine($"Error in Session destructor: {ex.Message}");
             }
         }
+
+        #endregion
     }
 }

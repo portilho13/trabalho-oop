@@ -1,31 +1,64 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿//-----------------------------------------------------------------
+//    <copyright file="SessionManagerController.cs" company="Ryanair">
+//     Copyright Ryanair. All rights reserved.
+//    </copyright>
+//    <date>21-12-2024</date>
+//    <time>17:15</time>
+//    <version>0.1</version>
+//    <author>Mario Portilho @a27989</author>
+//-----------------------------------------------------------------
+
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using trabalho_oop.api.models;
 
 namespace trabalho_oop.api.controllers
 {
+    #region Class Documentation
+
+    /// <summary>
+    /// The SessionManagerController class provides API endpoints to handle user sessions.
+    /// It supports actions for login, registration, logout, authentication status, and managing reservations.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class SessionManagerController : ControllerBase
     {
+        #endregion
+
+        #region Fields
+
+        // The session manager instance that handles user session logic
         private readonly SessionManager _sessionManager;
 
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the SessionManagerController class.
+        /// </summary>
+        /// <param name="sessionManager">The session manager instance used by the controller to manage user sessions.</param>
         public SessionManagerController(SessionManager sessionManager)
         {
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager), "Session manager is null");
         }
 
+        #endregion
+
+        #region Login Methods
+
         /// <summary>
-        /// Login a staff member.
+        /// Logs in a staff member using their credentials.
         /// </summary>
+        /// <param name="request">The login request containing the staff member's email and password.</param>
+        /// <returns>A response indicating the login status, including a message and user details if successful.</returns>
         [HttpPost("Login/Staff")]
         public IActionResult LoginStaff([FromBody] LoginRequest request)
         {
             try
-            {   
-                Console.WriteLine(request.Email);
-                Console.WriteLine(request.Password);
+            {
                 var result = _sessionManager.LoginStaff(request.Email, request.Password);
                 if (result)
                 {
@@ -40,15 +73,15 @@ namespace trabalho_oop.api.controllers
         }
 
         /// <summary>
-        /// Login a passenger.
+        /// Logs in a passenger using their credentials.
         /// </summary>
+        /// <param name="request">The login request containing the passenger's email and password.</param>
+        /// <returns>A response indicating the login status, including a message and user details if successful.</returns>
         [HttpPost("Login/Passenger")]
         public IActionResult LoginPassenger([FromBody] LoginRequest request)
         {
             try
             {
-                Console.WriteLine(request.Email);
-                Console.WriteLine(request.Password);
                 bool result = _sessionManager.LoginPassenger(request.Email, request.Password);
                 if (result)
                 {
@@ -62,9 +95,15 @@ namespace trabalho_oop.api.controllers
             }
         }
 
+        #endregion
+
+        #region Register Methods
+
         /// <summary>
-        /// Register a staff member.
+        /// Registers a new staff member.
         /// </summary>
+        /// <param name="request">The registration request containing the staff member's name, email, and password.</param>
+        /// <returns>A response indicating the registration status.</returns>
         [HttpPost("Register/Staff")]
         public IActionResult RegisterStaff([FromBody] RegisterRequest request)
         {
@@ -81,8 +120,10 @@ namespace trabalho_oop.api.controllers
         }
 
         /// <summary>
-        /// Register a passenger.
+        /// Registers a new passenger.
         /// </summary>
+        /// <param name="request">The registration request containing the passenger's name, email, and password.</param>
+        /// <returns>A response indicating the registration status.</returns>
         [HttpPost("Register/Passenger")]
         public IActionResult RegisterPassenger([FromBody] RegisterRequest request)
         {
@@ -98,9 +139,14 @@ namespace trabalho_oop.api.controllers
             }
         }
 
+        #endregion
+
+        #region Logout Method
+
         /// <summary>
-        /// Logout the current user.
+        /// Logs out the currently logged-in user.
         /// </summary>
+        /// <returns>A response indicating the logout status.</returns>
         [HttpPost("Logout")]
         public IActionResult Logout()
         {
@@ -115,9 +161,14 @@ namespace trabalho_oop.api.controllers
             }
         }
 
+        #endregion
+
+        #region Authentication Methods
+
         /// <summary>
-        /// Check if a user is authenticated.
+        /// Checks if a user is authenticated.
         /// </summary>
+        /// <returns>A response indicating whether the user is authenticated or not.</returns>
         [HttpGet("IsAuthenticated")]
         public IActionResult IsAuthenticated()
         {
@@ -133,8 +184,9 @@ namespace trabalho_oop.api.controllers
         }
 
         /// <summary>
-        /// Get details of the logged-in user.
+        /// Retrieves the details of the currently logged-in user.
         /// </summary>
+        /// <returns>A response with the details of the logged-in user or a message indicating no user is logged in.</returns>
         [HttpGet("GetLoggedInUser")]
         public IActionResult GetLoggedInUser()
         {
@@ -153,9 +205,14 @@ namespace trabalho_oop.api.controllers
             }
         }
 
+        #endregion
+
+        #region Display Methods
+
         /// <summary>
-        /// Display all registered staff members.
+        /// Displays all registered staff members.
         /// </summary>
+        /// <returns>A list of registered staff members.</returns>
         [HttpGet("DisplayStaff")]
         public IActionResult DisplayStaff()
         {
@@ -174,8 +231,9 @@ namespace trabalho_oop.api.controllers
         }
 
         /// <summary>
-        /// Display all registered passengers.
+        /// Displays all registered passengers.
         /// </summary>
+        /// <returns>A list of registered passengers.</returns>
         [HttpGet("DisplayPassengers")]
         public IActionResult DisplayPassengers()
         {
@@ -193,24 +251,26 @@ namespace trabalho_oop.api.controllers
             }
         }
 
+        #endregion
+
+        #region Reservation Methods
+
         /// <summary>
-        /// Get all reservations for the logged-in passenger.
+        /// Retrieves all reservations for the logged-in passenger.
         /// </summary>
+        /// <returns>A list of reservations or a message indicating no reservations are found.</returns>
         [HttpGet("GetPassengerReservations")]
         public IActionResult GetPassengerReservations()
         {
             try
             {
-                // Check if the user is authenticated
                 var loggedInPassenger = _sessionManager.GetLoggedInPerson() as Passenger;
                 if (loggedInPassenger == null)
                 {
                     return Unauthorized(new { message = "User is not authenticated" });
                 }
 
-                // Retrieve reservations for the logged-in passenger
                 var reservations = loggedInPassenger.Reservations;
-                
                 if (reservations != null && reservations.Any())
                 {
                     List<PassengerReservation> passengerReservations = new List<PassengerReservation>();
@@ -228,29 +288,32 @@ namespace trabalho_oop.api.controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
+
+        /// <summary>
+        /// Adds a reservation for the logged-in passenger.
+        /// </summary>
+        /// <param name="reservationDetails">The reservation details for the passenger.</param>
+        /// <returns>A response indicating the status of the reservation addition.</returns>
         [HttpPost("AddPassengerReservation")]
         public IActionResult AddPassengerReservation([FromBody] ReservationPerson reservationDetails)
         {
             try
             {
-                // Check if the user is authenticated
                 var loggedInPassenger = _sessionManager.GetLoggedInPerson() as Passenger;
                 if (loggedInPassenger == null)
                 {
                     return Unauthorized(new { message = "User is not authenticated" });
                 }
 
-                // Retrieve reservations for the logged-in passenger
                 var reservations = loggedInPassenger.Reservations;
                 PassengerReservation newPassengerReservation = new PassengerReservation()
                 {
                     FlightNumber = reservationDetails.FlightNumber,
                     ReservationCode = reservationDetails.ReservationCode,
                 };
-                
+
                 loggedInPassenger.AddReservation(newPassengerReservation);
-                
+
                 return Ok(new { message = "Passenger reservation added successfully" });
             }
             catch (Exception ex)
@@ -258,19 +321,7 @@ namespace trabalho_oop.api.controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-    }
-    
 
-    public class LoginRequest
-    {
-        public string Email { get; set; } // StaffCode or Email
-        public string Password { get; set; }
-    }
-
-    public class RegisterRequest
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        #endregion
     }
 }

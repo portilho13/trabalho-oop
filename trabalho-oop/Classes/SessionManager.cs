@@ -14,6 +14,7 @@ using System.Text.Json;
 
 namespace trabalho_oop
 {
+    #region Class Documentation
 
     /// <summary>
     /// The SessionManager class handles the management of both staff and passengers' login sessions, 
@@ -22,6 +23,10 @@ namespace trabalho_oop
     /// </summary>
     public class SessionManager
     {
+        #endregion
+
+        #region Fields
+
         // The active session for the logged-in user (either staff or passenger)
         public Session ActiveSession;
 
@@ -31,6 +36,10 @@ namespace trabalho_oop
 
         // Logger instance for logging events
         private static ILogger _logger;
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
         /// Initializes the SessionManager with empty lists for staff and passengers
@@ -52,6 +61,10 @@ namespace trabalho_oop
             }
         }
 
+        #endregion
+
+        #region Login Methods
+
         /// <summary>
         /// Handles the staff login process by verifying staff credentials (staff code and password).
         /// Creates a new session if the login is successful.
@@ -70,7 +83,7 @@ namespace trabalho_oop
                 if (_staff == null)
                     throw new InvalidOperationException("Staff list not initialized");
 
-                // Hash the password and attempt to find the staff member with the provided credentials\
+                // Hash the password and attempt to find the staff member with the provided credentials
                 foreach (Staff staff in _staff)
                 {
                     if (staff.Email.Trim() == email.Trim() &&
@@ -82,18 +95,59 @@ namespace trabalho_oop
                     }
                 }
                 
-
                 // If no staff found, log the failed login attempt
                 _logger.Warn($"Staff login failed: Invalid credentials for {email}");
                 return false;
             }
             catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
             {
-                // Log errors and rethrow as a general exception
                 _logger.Error($"Error during staff login: {ex.Message}");
                 throw new InvalidOperationException("Failed to process staff login", ex);
             }
         }
+
+        /// <summary>
+        /// Handles passenger login by checking the email and password.
+        /// Creates a new session for the passenger if the login is successful.
+        /// </summary>
+        public bool LoginPassenger(string email, string password)
+        {
+            try
+            {
+                // Validate inputs
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("Email cannot be empty", nameof(email));
+
+                if (string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("Password cannot be empty", nameof(password));
+
+                if (_passengers == null)
+                    throw new InvalidOperationException("Passenger list not initialized");
+
+                foreach (Passenger passenger in _passengers)
+                {
+                    if (passenger.Email.Trim() == email.Trim() && passenger.Password.Trim() == PasswordUtility.HashPassword(password.Trim()))
+                    {
+                        ActiveSession = new Session(passenger, _logger);
+                        _logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
+                        return true;
+                    }
+                }
+                
+                // Log failed login attempt
+                _logger.Warn($"Passenger login failed: Invalid credentials for {email}");
+                return false;
+            }
+            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
+            {
+                _logger.Error($"Error during passenger login: {ex.Message}");
+                throw new InvalidOperationException("Failed to process passenger login", ex);
+            }
+        }
+
+        #endregion
+
+        #region Data Loading and Saving
 
         /// <summary>
         /// Loads staff and passenger data from the FMS (File Management System).
@@ -134,133 +188,39 @@ namespace trabalho_oop
         }
 
         /// <summary>
-        /// Handles passenger login by checking the email and password.
-        /// Creates a new session for the passenger if the login is successful.
+        /// Saves all staff and passenger data to the FMS (File Management System).
         /// </summary>
-        public bool LoginPassenger(string email, string password)
+        public void Save()
         {
             try
             {
-                // Validate inputs
-                if (string.IsNullOrWhiteSpace(email))
-                    throw new ArgumentException("Email cannot be empty", nameof(email));
+                if (_staff == null || _passengers == null)
+                    throw new InvalidOperationException("Staff or passenger list not initialized");
 
-                if (string.IsNullOrWhiteSpace(password))
-                    throw new ArgumentException("Password cannot be empty", nameof(password));
-
-                if (_passengers == null)
-                    throw new InvalidOperationException("Passenger list not initialized");
-
+                foreach (Staff staff in _staff)
+                {
+                    if (staff != null)
+                        FMS.Instance.Save(staff);
+                }
 
                 foreach (Passenger passenger in _passengers)
                 {
-                    if (passenger.Email.Trim() == email.Trim() && passenger.Password.Trim() == PasswordUtility.HashPassword(password.Trim()))
-                    {
-                        ActiveSession = new Session(passenger, _logger);
-                        _logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
-                        return true;
-                    }
+                    if (passenger != null)
+                        FMS.Instance.Save(passenger);
                 }
-                
 
-                // Log failed login attempt
-                _logger.Warn($"Passenger login failed: Invalid credentials for {email}");
-                return false;
-            }
-            catch (Exception ex) when (ex is not ArgumentException && ex is not InvalidOperationException)
-            {
-                _logger.Error($"Error during passenger login: {ex.Message}");
-                throw new InvalidOperationException("Failed to process passenger login", ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Logs the current user out of the session.
-        /// </summary>
-        public void Logout()
-        {
-            try
-            {
-                if (ActiveSession?.LoggedInPerson != null)
-                {
-                    _logger.Info($"User {ActiveSession.LoggedInPerson.Name} logged out");
-                }
-                ActiveSession = null;
+                _logger.Info("Staff and Passenger data saved to FMS");
             }
             catch (Exception ex)
             {
-                _logger.Error($"Error during logout: {ex.Message}");
-                throw new InvalidOperationException("Failed to process logout", ex);
+                _logger.Error($"Failed to save data: {ex.Message}");
+                throw new InvalidOperationException("Failed to save data to FMS", ex);
             }
         }
 
-        /// <summary>
-        /// Checks if there is an active session.
-        /// </summary>
-        public bool IsAuthenticated()
-        {
-            try
-            {
-                return ActiveSession != null;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"Error checking authentication status: {ex.Message}");
-                throw new InvalidOperationException("Failed to check authentication status", ex);
-            }
-        }
+        #endregion
 
-        /// <summary>
-        /// Displays all registered staff members.
-        /// </summary>
-        public void DisplayStaff()
-        {
-            foreach (Staff staff in _staff)
-            {
-                Console.WriteLine(staff.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Displays all registered passengers.
-        /// </summary>
-        public void DisplayPassengers()
-        {
-            foreach (Passenger passenger in _passengers)
-            {
-                Console.WriteLine($"Passenger: {passenger.Name}, {passenger.Email}, {passenger.Id}");
-            }
-        }
-
-        /// <summary>
-        /// Returns the entity type (either Passenger or Staff) of the currently logged-in user.
-        /// </summary>
-        public EntityType GetEntityType()
-        {
-            Person person = GetLoggedInPerson();
-            if (person is Passenger)
-            {
-                return EntityType.Passenger;
-            }
-            return EntityType.Staff;
-        }
-
-        /// <summary>
-        /// Retrieves the person currently logged into the session.
-        /// </summary>
-        public Person GetLoggedInPerson()
-        {
-            try
-            {
-                return ActiveSession?.LoggedInPerson;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"Error retrieving logged in person: {ex.Message}");
-                throw new InvalidOperationException("Failed to retrieve logged in person", ex);
-            }
-        }
+        #region Registration Methods
 
         /// <summary>
         /// Registers a new staff member with the given details.
@@ -339,36 +299,101 @@ namespace trabalho_oop
             }
         }
 
+        #endregion
+
+        #region Authentication Methods
 
         /// <summary>
-        /// Saves all staff and passenger data to the FMS (File Management System).
+        /// Logs the current user out of the session.
         /// </summary>
-        public void Save()
+        public void Logout()
         {
             try
             {
-                if (_staff == null || _passengers == null)
-                    throw new InvalidOperationException("Staff or passenger list not initialized");
-
-                foreach (Staff staff in _staff)
+                if (ActiveSession?.LoggedInPerson != null)
                 {
-                    if (staff != null)
-                        FMS.Instance.Save(staff);
+                    _logger.Info($"User {ActiveSession.LoggedInPerson.Name} logged out");
                 }
-
-                foreach (Passenger passenger in _passengers)
-                {
-                    if (passenger != null)
-                        FMS.Instance.Save(passenger);
-                }
-
-                _logger.Info("Staff and Passenger data saved to FMS");
+                ActiveSession = null;
             }
             catch (Exception ex)
             {
-                _logger.Error($"Failed to save data: {ex.Message}");
-                throw new InvalidOperationException("Failed to save data to FMS", ex);
+                _logger.Error($"Error during logout: {ex.Message}");
+                throw new InvalidOperationException("Failed to process logout", ex);
             }
         }
+
+        /// <summary>
+        /// Checks if there is an active session.
+        /// </summary>
+        public bool IsAuthenticated()
+        {
+            try
+            {
+                return ActiveSession != null;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error checking authentication status: {ex.Message}");
+                throw new InvalidOperationException("Failed to check authentication status", ex);
+            }
+        }
+
+        /// <summary>
+        /// Returns the entity type (either Passenger or Staff) of the currently logged-in user.
+        /// </summary>
+        public EntityType GetEntityType()
+        {
+            Person person = GetLoggedInPerson();
+            if (person is Passenger)
+            {
+                return EntityType.Passenger;
+            }
+            return EntityType.Staff;
+        }
+
+        /// <summary>
+        /// Retrieves the person currently logged into the session.
+        /// </summary>
+        public Person GetLoggedInPerson()
+        {
+            try
+            {
+                return ActiveSession?.LoggedInPerson;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error retrieving logged in person: {ex.Message}");
+                throw new InvalidOperationException("Failed to retrieve logged in person", ex);
+            }
+        }
+
+        #endregion
+
+        #region Display Methods
+
+        /// <summary>
+        /// Displays all registered staff members.
+        /// </summary>
+        public void DisplayStaff()
+        {
+            foreach (Staff staff in _staff)
+            {
+                Console.WriteLine(staff.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Displays all registered passengers.
+        /// </summary>
+        public void DisplayPassengers()
+        {
+            foreach (Passenger passenger in _passengers)
+            {
+                Console.WriteLine($"Passenger: {passenger.Name}, {passenger.Email}, {passenger.Id}");
+            }
+        }
+
+        #endregion
     }
 }

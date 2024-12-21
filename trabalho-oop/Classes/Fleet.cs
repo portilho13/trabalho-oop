@@ -18,30 +18,63 @@ namespace trabalho_oop
     /// </summary>
     public class Fleet
     {
-        // Dictionary to hold the fleet of airplanes, indexed by their registration code.
+        #region Private Properties
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Dictionary to hold the fleet of airplanes, indexed by their registration code.
+        //    </summary>
+        //-----------------------------------------------------------------
         private Dictionary<string, Airplane> _fleet = new Dictionary<string, Airplane>();
 
-        // Logger instance to log actions performed on the fleet
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Logger instance to log actions performed on the fleet.
+        //    </summary>
+        //-----------------------------------------------------------------
         private readonly ILogger _logger;
 
+        #endregion
+
+        #region Constructors
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Constructor to initialize the Fleet with a logger instance.
+        //        Throws an exception if the logger is null.
+        //    </summary>
+        //    <param name="logger">Logger instance to log fleet operations.</param>
+        //-----------------------------------------------------------------
         public Fleet(ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         }
 
-        /// <summary>
-        /// Checks if an airplane with the specified registration exists in the fleet.
-        /// </summary>
-        /// <param name="registration">The registration of the airplane to check.</param>
-        /// <returns>True if the airplane exists, otherwise false.</returns>
+        #endregion
+
+        #region Private Methods
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Checks whether an airplane with the given registration already exists in the fleet.
+        //    </summary>
+        //    <param name="registration">The registration code of the airplane.</param>
+        //    <returns>True if the airplane exists, false otherwise.</returns>
+        //-----------------------------------------------------------------
         private bool DoesPlaneExist(string registration) => _fleet.ContainsKey(registration);
 
-        /// <summary>
-        /// Retrieves an airplane from the fleet by its registration code.
-        /// Throws a KeyNotFoundException if the airplane does not exist.
-        /// </summary>
-        /// <param name="registration">The registration of the airplane to retrieve.</param>
-        /// <returns>The airplane corresponding to the given registration.</returns>
+        #endregion
+
+        #region Public Methods
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Retrieves an airplane by its registration code.
+        //        If the airplane is not found, returns null.
+        //    </summary>
+        //    <param name="registration">The registration code of the airplane.</param>
+        //    <returns>The Airplane object corresponding to the registration, or null if not found.</returns>
+        //-----------------------------------------------------------------
         public Airplane? GetAirplane(string registration)
         {
             if (_fleet.TryGetValue(registration, out var airplane))
@@ -52,14 +85,14 @@ namespace trabalho_oop
             return null; // Return null if the registration does not exist
         }
 
-        
-
-
-        /// <summary>
-        /// Adds a new airplane to the fleet.
-        /// If an airplane with the same registration already exists, it will throw an exception.
-        /// </summary>
-        /// <param name="airplane">The airplane to add to the fleet.</param>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Adds a new airplane to the fleet.
+        //        Throws an exception if an airplane with the same registration already exists.
+        //    </summary>
+        //    <param name="airplane">The Airplane object to be added.</param>
+        //    <exception cref="InvalidOperationException">Thrown if the airplane already exists in the fleet.</exception>
+        //-----------------------------------------------------------------
         public void AddAirplane(Airplane airplane)
         {
             if (airplane == null) throw new ArgumentNullException(nameof(airplane));
@@ -72,10 +105,12 @@ namespace trabalho_oop
             _logger.Info($"Airplane {airplane.Registration} added to fleet.");
         }
 
-        /// <summary>
-        /// Loads the fleet of airplanes from the files stored in the FMS system.
-        /// Deserializes the JSON files into Airplane objects and adds them to the fleet.
-        /// </summary>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Loads the fleet of airplanes from external files stored in the FMS system.
+        //        Deserializes each file into an Airplane object and adds them to the fleet.
+        //    </summary>
+        //-----------------------------------------------------------------
         public void LoadFleet()
         {
             // Retrieves a list of files containing airplane data
@@ -94,12 +129,15 @@ namespace trabalho_oop
             }
         }
 
-        /// <summary>
-        /// Displays the registration numbers of all airplanes in the fleet.
-        /// </summary>
-        public List<String> GetAirplaneRegistrations()
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Retrieves a list of all airplane registration numbers in the fleet.
+        //    </summary>
+        //    <returns>A list of registration numbers of all airplanes in the fleet.</returns>
+        //-----------------------------------------------------------------
+        public List<string> GetAirplaneRegistrations()
         {
-            List<String> aircraftList = new List<string>();
+            List<string> aircraftList = new List<string>();
             foreach (Airplane airplane in _fleet.Values)
             {
                 aircraftList.Add(airplane.Registration);
@@ -107,11 +145,14 @@ namespace trabalho_oop
             return aircraftList;
         }
 
-        /// <summary>
-        /// Removes an airplane from the fleet by its registration code.
-        /// Also deletes the airplane data from the FMS system.
-        /// </summary>
-        /// <param name="registration">The registration of the airplane to remove.</param>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Removes an airplane from the fleet by its registration code.
+        //        Also deletes the airplane data from the FMS system.
+        //    </summary>
+        //    <param name="registration">The registration of the airplane to remove.</param>
+        //    <exception cref="KeyNotFoundException">Thrown if the airplane does not exist.</exception>
+        //-----------------------------------------------------------------
         public void RemoveAirplane(string registration)
         {
             // Retrieves the airplane to be removed
@@ -126,5 +167,7 @@ namespace trabalho_oop
 
             _logger.Info($"Airplane {registration} removed from fleet.");
         }
+
+        #endregion
     }
 }

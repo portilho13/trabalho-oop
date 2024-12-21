@@ -18,32 +18,82 @@ namespace trabalho_oop
     /// </summary>
     public class Airplane : IStorable
     {
-        // Private logger instance to log information and errors
+        #region Private Properties
+        
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Private logger instance to log information and errors 
+        //        related to airplane operations.
+        //    </summary>
+        //-----------------------------------------------------------------
         private ILogger _logger;
         
-        // Public properties with getters and setters to manage airplane details
+        #endregion
+        
+        #region Public Properties
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Gets or sets the company that owns the airplane.
+        //    </summary>
+        //-----------------------------------------------------------------
         public string Company { get; set; }
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Gets or sets the unique registration number of the airplane.
+        //    </summary>
+        //-----------------------------------------------------------------
         public string Registration { get; set; }
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Gets or sets the occupation status of the airplane.
+        //        Indicates whether the airplane is occupied or not.
+        //    </summary>
+        //-----------------------------------------------------------------
         public bool IsOccupied { get; set; }
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Gets or sets the maximum capacity of the airplane (e.g., number of seats).
+        //    </summary>
+        //-----------------------------------------------------------------
         public int Capacity { get; set; }
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Gets or sets the model of the airplane.
+        //    </summary>
+        //-----------------------------------------------------------------
         public string Model { get; set; }
 
-        // Default constructor
+        #endregion
+        
+        #region Constructors
+        
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Default constructor for the Airplane class. 
+        //        Initializes an empty instance without any parameters.
+        //    </summary>
+        //-----------------------------------------------------------------
         public Airplane() {}
 
-        /// <summary>
-        /// Constructor to initialize the essential properties of the airplane.
-        /// Validates the parameters and logs the airplane creation.
-        /// </summary>
-        /// <param name="company">Company owning the airplane</param>
-        /// <param name="registration">Unique registration number of the airplane</param>
-        /// <param name="capacity">Capacity of the airplane</param>
-        /// <param name="model">Model of the airplane</param>
-        /// <param name="logger">Logger instance to log information</param>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Constructor to initialize the essential properties of the airplane.
+        //        Validates the parameters and logs the airplane creation.
+        //    </summary>
+        //    <param name="company">Company owning the airplane.</param>
+        //    <param name="registration">Unique registration number of the airplane.</param>
+        //    <param name="capacity">Capacity of the airplane.</param>
+        //    <param name="model">Model of the airplane.</param>
+        //    <param name="logger">Logger instance to log information.</param>
+        //-----------------------------------------------------------------
         public Airplane(string company, string registration, int capacity, string model, ILogger logger)
         {
-            
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger),  "logger cannot be null");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null");
             // Validate the constructor parameters before initializing
             ValidateConstructorParameters(company, registration, capacity, model);
 
@@ -53,19 +103,30 @@ namespace trabalho_oop
             Capacity = capacity;
             IsOccupied = false;  // Default value for IsOccupied
             Model = model;
-                
-            
         }
-        
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Sets the logger instance for the airplane.
+        //    </summary>
+        //    <param name="logger">Logger instance to log information.</param>
+        //-----------------------------------------------------------------
         public void SetLogger(ILogger logger) => _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
 
-        /// <summary>
-        /// Validates the constructor parameters to ensure they meet required conditions.
-        /// </summary>
-        /// <param name="company">Company owning the airplane</param>
-        /// <param name="registration">Unique registration number of the airplane</param>
-        /// <param name="capacity">Capacity of the airplane</param>
-        /// <param name="model">Model of the airplane</param>
+        #endregion
+        
+        #region Private Methods
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Validates the constructor parameters to ensure they meet required conditions.
+        //        Throws appropriate exceptions for invalid inputs.
+        //    </summary>
+        //    <param name="company">Company owning the airplane.</param>
+        //    <param name="registration">Unique registration number of the airplane.</param>
+        //    <param name="capacity">Capacity of the airplane.</param>
+        //    <param name="model">Model of the airplane.</param>
+        //-----------------------------------------------------------------
         private void ValidateConstructorParameters(string company, string registration, int capacity, string model)
         {
             // Ensure company is not empty or whitespace
@@ -88,21 +149,28 @@ namespace trabalho_oop
                 throw new ArgumentException("Model cannot be empty or whitespace.", nameof(model));
         }
 
-        /// <summary>
-        /// Toggles the occupation status of the airplane and logs the change.
-        /// </summary>
+        #endregion
+
+        #region Public Methods
+
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Toggles the occupation status of the airplane and logs the change.
+        //    </summary>
+        //-----------------------------------------------------------------
         public void ChangeOccupiedStatus()
         {
             // Toggle the occupation status
             IsOccupied = !IsOccupied;
-                
-            // Log the change in occupation status
+            // Log the change in occupation status (log functionality can be added here)
         }
 
-        /// <summary>
-        /// Converts the airplane object to a JSON string for storage.
-        /// </summary>
-        /// <returns>A JSON string representing the airplane object</returns>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Converts the airplane object to a JSON string for storage.
+        //    </summary>
+        //    <returns>A JSON string representing the airplane object.</returns>
+        //-----------------------------------------------------------------
         public string ConvertToJson()
         {
             try
@@ -125,16 +193,22 @@ namespace trabalho_oop
             }
         }
 
-        /// <summary>
-        /// Returns the identifier of the airplane, which is its registration number.
-        /// </summary>
-        /// <returns>The registration number of the airplane</returns>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Returns the identifier of the airplane, which is its registration number.
+        //    </summary>
+        //    <returns>The registration number of the airplane.</returns>
+        //-----------------------------------------------------------------
         public string GetIdentifier() => Registration;
 
-        /// <summary>
-        /// Returns the entity type for this object, which is Airplane.
-        /// </summary>
-        /// <returns>The entity type of the object</returns>
+        //-----------------------------------------------------------------
+        //    <summary>
+        //        Returns the entity type for this object, which is Airplane.
+        //    </summary>
+        //    <returns>The entity type of the object.</returns>
+        //-----------------------------------------------------------------
         public EntityType GetEntityType() => EntityType.Airplane;
+
+        #endregion
     }
 }

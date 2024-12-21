@@ -20,16 +20,48 @@ namespace trabalho_oop
     /// </summary>
     public class Flight : IStorable
     {
-        public string Number { get; set; }  // The unique flight number (e.g., "AA123")
-        public Airport Origin { get; private set; }  // The origin location of the flight (e.g., "New York")
-        public Airport Destination { get; private set; }  // The destination location of the flight (e.g., "Los Angeles")
-        public Airplane Airplane { get; private set; }  // The airplane assigned to the flight
+        #region Properties
+        
+        /// <summary>
+        /// The unique flight number (e.g., "AA123").
+        /// </summary>
+        public string Number { get; set; }
 
-        private readonly ILogger _logger;
-        public DateTime ScheduledDateTime { get; private set; }  // The date and time the flight is scheduled to depart
+        /// <summary>
+        /// The origin location of the flight (e.g., "New York").
+        /// </summary>
+        public Airport Origin { get; private set; }
 
+        /// <summary>
+        /// The destination location of the flight (e.g., "Los Angeles").
+        /// </summary>
+        public Airport Destination { get; private set; }
+
+        /// <summary>
+        /// The airplane assigned to the flight.
+        /// </summary>
+        public Airplane Airplane { get; private set; }
+
+        /// <summary>
+        /// The date and time the flight is scheduled to depart.
+        /// </summary>
+        public DateTime ScheduledDateTime { get; private set; }
+
+        /// <summary>
+        /// A collection of reservations for passengers, indexed by reservation code.
+        /// </summary>
         public Dictionary<string, FlightReservation> PassengersReservations { get; private set; } =
-            new Dictionary<string, FlightReservation>(); // Reservations for passengers, indexed by reservation code
+            new Dictionary<string, FlightReservation>();
+
+        #endregion
+
+        #region Private Fields
+        
+        private readonly ILogger _logger;  // Logger for logging flight-related activities
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Gets the unique identifier for the flight, which is the flight number.
@@ -75,9 +107,9 @@ namespace trabalho_oop
         private int GenerateRandomNumberOfPassengers()
         {
             Random random = new Random();
-            return random.Next(100, Airplane.Capacity); // Random value between 100 and Airplane's max capacity
+            return random.Next(100, Airplane.Capacity);  // Random value between 100 and Airplane's max capacity
         }
-        
+
         /// <summary>
         /// Checks if a reservation exists for a given reservation code.
         /// Throws an exception if the reservation is not found.
@@ -99,15 +131,15 @@ namespace trabalho_oop
         /// <returns>The reservation corresponding to the given reservation code.</returns>
         public Reservation GetReservation(string reservationCode)
         {
-            CheckReservationExists(reservationCode); // Ensure the reservation exists
+            CheckReservationExists(reservationCode);  // Ensure the reservation exists
             return PassengersReservations[reservationCode];
         }
-
 
         /// <summary>
         /// Adds a new reservation for a passenger, ensuring each reservation code is unique.
         /// </summary>
-        /// <param name="passenger">The passenger to add a reservation for.</param>
+        /// <param name="name">The passenger's name.</param>
+        /// <returns>The unique reservation code.</returns>
         public string AddReservation(string name)
         {
             FlightReservation flightReservation;
@@ -118,7 +150,6 @@ namespace trabalho_oop
             {
                 reservationCode = NumberGenerator.GenerateRandomNumber();
             } while (PassengersReservations.ContainsKey(reservationCode));
-            
 
             flightReservation = new FlightReservation
             {
@@ -131,9 +162,11 @@ namespace trabalho_oop
             return reservationCode;
         }
 
-        
-        public Flight() {} // Constructor for deserelization 
-        
+        /// <summary>
+        /// Default constructor for deserialization.
+        /// </summary>
+        public Flight() {}
+
         /// <summary>
         /// Initializes a new flight with the provided details.
         /// </summary>
@@ -150,7 +183,6 @@ namespace trabalho_oop
 
             // Validate the constructor parameters
             ValidateConstructorParameters(number, origin, destination, airplane);
-            
 
             // Mark the airplane as occupied (it will be used for this flight)
             airplane.ChangeOccupiedStatus();
@@ -165,9 +197,8 @@ namespace trabalho_oop
             // Generate a list of passenger reservations
             PassengerList p = new PassengerList();
             PassengersReservations = p.GeneratePassengerList(GenerateRandomNumberOfPassengers());
-            
         }
-        
+
         /// <summary>
         /// Validates the input parameters to ensure they are not null or empty.
         /// </summary>
@@ -206,6 +237,7 @@ namespace trabalho_oop
                 throw new InvalidOperationException("Unexpected error during parameter validation", ex);
             }
         }
-        
+
+        #endregion
     }
 }
