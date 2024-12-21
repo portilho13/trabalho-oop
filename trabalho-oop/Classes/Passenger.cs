@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Passenger.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -8,10 +8,8 @@
 //    <author>Mario Portilho @a27989</author>
 //-----------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace trabalho_oop
@@ -23,6 +21,7 @@ namespace trabalho_oop
     public class Passenger : Person, IStorable
     {
         // Fields
+        
         public string Password { get; set; }
         public string Id { get; set; }
         
@@ -36,13 +35,17 @@ namespace trabalho_oop
         /// <summary>
         /// Constructor to create a new passenger with a unique identifier.
         /// </summary>
-        public Passenger(string name, string email, string password)
+        public Passenger(string name, string email, string password, ILogger logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
             ValidateConstructorParameters(name, email, password);
             Name = name;
             Email = email;
-            Password = password;
+            Console.WriteLine("Password on class: " + password);
+            Password = PasswordUtility.HashPassword(password);
             Id = NumberGenerator.GenerateRandomNumber(); // Generate a unique passenger ID
+            _logger.Info($"New passenger created with id: {Id}.");
+
         }
         
         private void ValidateConstructorParameters(string name, string email, string password)

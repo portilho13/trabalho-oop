@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Reservation.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>

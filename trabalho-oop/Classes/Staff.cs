@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Staff.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -23,12 +23,13 @@ namespace trabalho_oop
     public class Staff : Person, IStorable
     {
         // Logger instance for logging activities related to staff
+        [NonSerialized]
         private static ILogger _logger;
         // The unique staff code assigned to the staff member
-        public string staffCode { get; set; }
+        public string StaffCode { get; set; }
 
         // The hashed password for the staff member
-        public string password { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
         /// Converts the Staff object to a JSON string for serialization.
@@ -56,6 +57,21 @@ namespace trabalho_oop
                 throw;
             }
         }
+        
+        private void ValidateConstructorParameters(string name, string email, string password)
+        {
+            // Ensure company is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be empty or whitespace.", nameof(name));
+
+            // Ensure registration is not empty or whitespace and within valid length
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email cannot be empty or whitespace.", nameof(email));
+
+            // Ensure model is not empty or whitespace
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password cannot be empty or whitespace.", nameof(password));
+        }
 
         /// <summary>
         /// Returns the entity type for the staff, which is 'Staff'.
@@ -67,73 +83,21 @@ namespace trabalho_oop
         /// Gets the unique identifier for the staff, which is the staff code.
         /// </summary>
         /// <returns>Staff's unique staff code</returns>
-        public string GetIdentifier() => staffCode;
-
-
-        /// <summary>
-        /// Hashes the provided password using SHA256 for secure storage.
-        /// Handles errors during hashing and logs them.
-        /// </summary>
-        /// <param name="password">Plain text password to hash</param>
-        /// <returns>SHA256 hash of the password</returns>
-        private string HashPassword(string password)
-        {
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new ArgumentNullException(nameof(password), "Password cannot be null or empty");
-            }
-
-            try
-            {
-                using (SHA256 sha256Hash = SHA256.Create())
-                {
-                    byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                    byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
-
-                    // Converting the byte array to a hex string
-                    StringBuilder hashString = new StringBuilder();
-                    foreach (byte b in hashBytes)
-                    {
-                        hashString.Append(b.ToString("x2"));
-                    }
-
-                    return hashString.ToString();
-                }
-            }
-            catch (CryptographicException ex)
-            {
-                // Logging cryptographic errors encountered during hashing
-                _logger.Error($"Cryptographic error while hashing password: {ex.Message}");
-                throw new InvalidOperationException("Failed to hash password", ex);
-            }
-            catch (Exception ex)
-            {
-                // Handling unexpected errors during password hashing
-                _logger.Error($"Unexpected error while hashing password: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Sets the staff member's password by hashing the provided password.
-        /// Logs the password set operation.
-        /// </summary>
-        /// <param name="password">Plain text password to set</param>
-        public void SetPassword(string password)
-        {
-            this.password = HashPassword(password);
-            _logger.Info($"Password set for staff member: {staffCode}.");
-        }
+        public string GetIdentifier() => StaffCode;
 
         /// <summary>
         /// Constructor for the Staff class that initializes the staff code and logs the creation event.
         /// Handles errors during object creation and logs them.
         /// </summary>
-        public Staff(ILogger logger)
+        public Staff(string name, string email, string password, ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
-            staffCode = NumberGenerator.GenerateRandomNumber();
-            _logger.Info($"New staff created with staff code: {staffCode}.");
+            ValidateConstructorParameters(name, email, password);
+            Name = name;
+            Email = email;
+            Password = PasswordUtility.HashPassword(password);
+            StaffCode = NumberGenerator.GenerateRandomNumber();
+            _logger.Info($"New staff created with staff code: {StaffCode}.");
         }
         
         public Staff() {}

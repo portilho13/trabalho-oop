@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using trabalho_oop.api.models;
 
 namespace trabalho_oop.api.controllers
 {
@@ -46,6 +47,8 @@ namespace trabalho_oop.api.controllers
         {
             try
             {
+                Console.WriteLine(request.Email);
+                Console.WriteLine(request.Password);
                 bool result = _sessionManager.LoginPassenger(request.Email, request.Password);
                 if (result)
                 {
@@ -142,7 +145,7 @@ namespace trabalho_oop.api.controllers
                 {
                     return Ok(person);
                 }
-                return NotFound(new { message = "No user is currently logged in" });
+                return Ok(new { message = "No user is currently logged in" });
             }
             catch (Exception ex)
             {
@@ -189,7 +192,74 @@ namespace trabalho_oop.api.controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Get all reservations for the logged-in passenger.
+        /// </summary>
+        [HttpGet("GetPassengerReservations")]
+        public IActionResult GetPassengerReservations()
+        {
+            try
+            {
+                // Check if the user is authenticated
+                var loggedInPassenger = _sessionManager.GetLoggedInPerson() as Passenger;
+                if (loggedInPassenger == null)
+                {
+                    return Unauthorized(new { message = "User is not authenticated" });
+                }
+
+                // Retrieve reservations for the logged-in passenger
+                var reservations = loggedInPassenger.Reservations;
+                
+                if (reservations != null && reservations.Any())
+                {
+                    List<PassengerReservation> passengerReservations = new List<PassengerReservation>();
+                    foreach (PassengerReservation p in reservations.Values)
+                    {
+                        passengerReservations.Add(p);
+                    }
+                    return Ok(passengerReservations);
+                }
+
+                return Ok(new { message = "No reservations found for the logged-in passenger" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        
+        [HttpPost("AddPassengerReservation")]
+        public IActionResult AddPassengerReservation([FromBody] ReservationPerson reservationDetails)
+        {
+            try
+            {
+                // Check if the user is authenticated
+                var loggedInPassenger = _sessionManager.GetLoggedInPerson() as Passenger;
+                if (loggedInPassenger == null)
+                {
+                    return Unauthorized(new { message = "User is not authenticated" });
+                }
+
+                // Retrieve reservations for the logged-in passenger
+                var reservations = loggedInPassenger.Reservations;
+                PassengerReservation newPassengerReservation = new PassengerReservation()
+                {
+                    FlightNumber = reservationDetails.FlightNumber,
+                    ReservationCode = reservationDetails.ReservationCode,
+                };
+                
+                loggedInPassenger.AddReservation(newPassengerReservation);
+                
+                return Ok(new { message = "Passenger reservation added successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
+    
 
     public class LoginRequest
     {

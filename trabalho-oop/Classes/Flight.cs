@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Flight.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -108,9 +108,8 @@ namespace trabalho_oop
         /// Adds a new reservation for a passenger, ensuring each reservation code is unique.
         /// </summary>
         /// <param name="passenger">The passenger to add a reservation for.</param>
-        public void AddReservation(Passenger passenger)
+        public string AddReservation(string name)
         {
-            PassengerReservation reservation;
             FlightReservation flightReservation;
             string reservationCode;
 
@@ -119,24 +118,17 @@ namespace trabalho_oop
             {
                 reservationCode = NumberGenerator.GenerateRandomNumber();
             } while (PassengersReservations.ContainsKey(reservationCode));
-
-            // Create the reservation object
-            reservation = new PassengerReservation
-            {
-                ReservationCode = reservationCode,
-                FlightNumber = Number,
-            };
-
-            // Add the reservation to the passenger
-            passenger.AddReservation(reservation);
+            
 
             flightReservation = new FlightReservation
             {
                 ReservationCode = reservationCode,
+                PassengerName = name
             };
 
             // Associate the reservation with the passenger and add it to the dictionary
             PassengersReservations.Add(reservationCode, flightReservation);
+            return reservationCode;
         }
 
         

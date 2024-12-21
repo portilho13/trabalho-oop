@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace trabalho_oop.api.controllers;
 
@@ -53,7 +53,7 @@ public class FlightController: ControllerBase
         }
     }
 
-    [HttpDelete(template: "{flightNumber}")]
+    [HttpDelete("{flightNumber}")]
     public IActionResult DeleteFlight(string flightNumber)
     {
         _flightList.DeleteFlight(flightNumber);
@@ -65,5 +65,13 @@ public class FlightController: ControllerBase
     public IActionResult GetFlight(string flightNumber)
     {
         return Ok(_flightList.GetFlight(flightNumber));
+    }
+
+    [HttpPost("{flightNumber}")]
+    public IActionResult AddReservation([FromBody] models.ReservationDetails reservation)
+    {
+        Flight flight = _flightList.GetFlight(reservation.FlightNumber);
+        string reservationCode = flight.AddReservation(reservation.Name);
+        return Ok(new { message = reservationCode });
     }
 }

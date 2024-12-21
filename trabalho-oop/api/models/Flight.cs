@@ -1,4 +1,4 @@
-namespace trabalho_oop.api.models;
+﻿namespace trabalho_oop.api.models;
 
 public struct Airport
 {

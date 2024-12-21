@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="SessionManager.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
@@ -70,17 +70,18 @@ namespace trabalho_oop
                 if (_staff == null)
                     throw new InvalidOperationException("Staff list not initialized");
 
-                // Hash the password and attempt to find the staff member with the provided credentials
-                string hashedPassword = CreateHashPassword(password);
-                Staff staff = _staff.Find(s => s.Email == email && s.password == hashedPassword);
-
-                // If staff found, create session and log the success
-                if (staff != null)
+                // Hash the password and attempt to find the staff member with the provided credentials\
+                foreach (Staff staff in _staff)
                 {
-                    ActiveSession = new Session(staff, _logger);
-                    _logger.Info($"Staff login successful: {staff.Name} ({staff.Email})");
-                    return true;
+                    if (staff.Email.Trim() == email.Trim() &&
+                        staff.Password.Trim() == PasswordUtility.HashPassword(password.Trim()))
+                    {
+                        ActiveSession = new Session(staff, _logger);
+                        _logger.Info($"Staff login successful: {staff.Name} ({staff.Email})");
+                        return true;
+                    }
                 }
+                
 
                 // If no staff found, log the failed login attempt
                 _logger.Warn($"Staff login failed: Invalid credentials for {email}");
@@ -91,39 +92,6 @@ namespace trabalho_oop
                 // Log errors and rethrow as a general exception
                 _logger.Error($"Error during staff login: {ex.Message}");
                 throw new InvalidOperationException("Failed to process staff login", ex);
-            }
-        }
-
-        /// <summary>
-        /// Creates a hashed version of the password using SHA256 for secure storage.
-        /// </summary>
-        private string CreateHashPassword(string password)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(password))
-                    throw new ArgumentException("Password cannot be empty", nameof(password));
-
-                using (SHA256 sha256Hash = SHA256.Create())
-                {
-                    byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-                    byte[] hashBytes = sha256Hash.ComputeHash(passwordBytes);
-                    StringBuilder hashString = new StringBuilder();
-                    
-                    // Convert the byte array to a hex string
-                    foreach (byte b in hashBytes)
-                    {
-                        hashString.Append(b.ToString("x2"));
-                    }
-                    
-                    return hashString.ToString();
-                }
-            }
-            catch (Exception ex) when (ex is not ArgumentException)
-            {
-                // Log any errors encountered during password hashing
-                _logger.Error("Error creating password hash");
-                throw new InvalidOperationException("Failed to create password hash", ex);
             }
         }
 
@@ -183,17 +151,19 @@ namespace trabalho_oop
                 if (_passengers == null)
                     throw new InvalidOperationException("Passenger list not initialized");
 
-                // Check if a passenger exists with the provided email and password
-                Passenger passenger = _passengers.Find(s => s.Email == email && s.Password == password);
 
-                if (passenger != null)
+                foreach (Passenger passenger in _passengers)
                 {
-                    ActiveSession = new Session(passenger, _logger);
-                    _logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
-                    return true;
+                    if (passenger.Email.Trim() == email.Trim() && passenger.Password.Trim() == PasswordUtility.HashPassword(password.Trim()))
+                    {
+                        ActiveSession = new Session(passenger, _logger);
+                        _logger.Info($"Passenger login successful: {passenger.Name} ({passenger.Email})");
+                        return true;
+                    }
                 }
+                
 
-                // If no passenger found, log the failed login attempt
+                // Log failed login attempt
                 _logger.Warn($"Passenger login failed: Invalid credentials for {email}");
                 return false;
             }
@@ -203,6 +173,7 @@ namespace trabalho_oop
                 throw new InvalidOperationException("Failed to process passenger login", ex);
             }
         }
+
 
         /// <summary>
         /// Logs the current user out of the session.
@@ -317,12 +288,7 @@ namespace trabalho_oop
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Staff newStaff = new Staff(_logger)
-                {
-                    Name = name,
-                    Email = email
-                };
-                newStaff.SetPassword(password);
+                Staff newStaff = new Staff(name, email, password, _logger);
 
                 _staff.Add(newStaff);
                 _logger.Info($"New staff registered: {name} ({email})");
@@ -351,23 +317,18 @@ namespace trabalho_oop
                     throw new ArgumentException("Password cannot be empty", nameof(password));
 
                 if (_passengers == null)
-                    throw new InvalidOperationException("Staff list not initialized");
+                    throw new InvalidOperationException("Passenger list not initialized");
 
+                // Trim password before hashing
+                string trimmedPassword = password.Trim();
                 Passenger p = _passengers.Find(s => s.Email == email);
                 if (p != null)
                 {
-                    _logger.Warn($"Staff registration failed: Email {email} already exists");
+                    _logger.Warn($"Registration failed: Email {email} already exists");
                     throw new InvalidOperationException($"Email {email} is already registered");
                 }
 
-                Passenger passenger = new Passenger()
-                {
-                    Name = name,
-                    Email = email,
-                    Id = NumberGenerator.GenerateRandomNumber()
-                };
-                passenger.Password = password;
-
+                Passenger passenger = new Passenger(name, email, trimmedPassword, _logger);
                 _passengers.Add(passenger);
                 _logger.Info($"New passenger registered: {name} ({email})");
             }
@@ -377,6 +338,7 @@ namespace trabalho_oop
                 throw new InvalidOperationException("Failed to register passenger", ex);
             }
         }
+
 
         /// <summary>
         /// Saves all staff and passenger data to the FMS (File Management System).

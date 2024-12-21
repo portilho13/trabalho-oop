@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using trabalho_oop;
 
 namespace trabalho_oop.api.controllers;

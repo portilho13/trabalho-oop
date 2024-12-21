@@ -1,4 +1,4 @@
-
+﻿
 using System.Text.Json;
 
 namespace trabalho_oop;

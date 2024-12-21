@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Session.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>

@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="IStorable.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>

@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Flights.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>

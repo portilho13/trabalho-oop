@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------
+﻿//-----------------------------------------------------------------
 //    <copyright file="Person.cs" company="Ryanair">
 //     Copyright Ryanair. All rights reserved.
 //    </copyright>
