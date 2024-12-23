@@ -20,7 +20,7 @@ namespace trabalho_oop
             {
                 options.AddPolicy("AllowSpecificOrigins", policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000") // Replace with your frontend's URL
+                    policy.WithOrigins("http://localhost:3000")
                           .AllowAnyHeader()
                           .AllowAnyMethod();
                 });
